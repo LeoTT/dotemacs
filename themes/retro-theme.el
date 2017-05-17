@@ -45,9 +45,11 @@
       (yellow               "#F0C674"))
 
   
-  ;; js2-warning js2-error
+  ;; js2-warning js2-error js2-object-property
   (custom-theme-set-faces
    'retro
+      `(js2-object-property  ((t (:foreground ,retro-orange))))
+
      `(company-tooltip ((t (:background ,retro-background :box t))))
      `(company-scrollbar-bg ((t (:background ,retro-strong-green))))
      `(company-scrollbar-fg ((t (:background ,retro-dark-slate))))

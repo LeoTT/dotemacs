@@ -1,4 +1,5 @@
 (use-package js2-mode
+  :ensure t
   :defer 1
   :mode "\\.js$"
   :config
@@ -23,11 +24,13 @@
 
 
 (use-package typescript-mode
+  :ensure t
   :mode "\\.ts$"
   :config
   (setq typescript-indent-level 2))
 
 (use-package tide
+  :ensure t
   :defer 1
   :config
   (progn

@@ -1,7 +1,6 @@
 
 
-;;; shell stuff
-(setenv "PATH" (concat (getenv "PATH") ":/Users/leonhardtobisch/.nvm/versions/node/v6.7.0/bin"))
+
 (setq explicit-shell-file-name "/bin/bash")
 
 ;; (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
@@ -19,5 +18,10 @@
 
 (put 'scroll-left 'disabled nil)
 (put 'erase-buffer 'disabled nil)
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
+
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))

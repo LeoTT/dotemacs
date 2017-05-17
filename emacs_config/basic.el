@@ -1,3 +1,6 @@
+(use-package magit
+  :ensure t)
+
 (use-package smex
   :ensure t
   :bind (("M-x" . smex)
@@ -36,6 +39,7 @@
 
 ;; Flycheck
 (use-package flycheck
+  :ensure t
   :config
   (progn 
                  (flycheck-add-mode 'javascript-eslint 'web-mode)
@@ -54,11 +58,13 @@
 
 
 
-(use-package company-mode
-
+(use-package company
+  :ensure t
   :config
 ;; aligns annotation to the right hand side
   (setq company-tooltip-align-annotations t))
 
 
 
+(use-package eldoc
+  :ensure t)

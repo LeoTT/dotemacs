@@ -1,7 +1,7 @@
+(load-file ".emacs.d/emacs_config/config.el")
 (load-file ".emacs.d/emacs_config/functions.el")
 (load-file ".emacs.d/emacs_config/keysettings.el")
 (load-file ".emacs.d/emacs_config/basic.el")
 (load-file ".emacs.d/emacs_config/web.el")
 (load-file ".emacs.d/emacs_config/hooks.el")
-(load-file ".emacs.d/emacs_config/config.el")
 (load-file ".emacs.d/emacs_config/javascript_typescript.el")

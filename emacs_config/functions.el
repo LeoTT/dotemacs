@@ -32,3 +32,39 @@
                                          (cons (concat "grep -nH -r  " dir) 13))))
       (grep command))))
 
+
+
+
+
+
+;;---------------ES6 import sort-----------------------
+
+;; (defun next-import ()
+;;   "Goes to beginning of next import"
+;;   (interactive)
+;;   (whereami)
+;;   (re-search-forward "^import.*from.*$")
+;;   (move-beginning-of-line 1))
+
+(defun next-import ()
+  (condition-case nil
+      (progn
+        (re-search-forward "^import.*from.*$")
+        (move-beginning-of-line 1))
+    (error
+     (goto-char (point-max)))))
+
+(defun import-start-key ()
+  (search-forward "'" nil nil)
+  ;; find  a better way to return nil
+  (quote nil)
+  )
+
+(defun import-sort ()
+    "Typescript/ES6 import sort"
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (next-import)
+          (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
+

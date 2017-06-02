@@ -12,6 +12,8 @@
                 (push '(">=" . ?≥) prettify-symbols-alist)
                 (push '("=>" . ?⟹) prettify-symbols-alist)
                 (push '("!==" . ?≠) prettify-symbols-alist)))
+    (font-lock-add-keywords 'js2-mode
+                            '(("require" . font-lock-keyword-face)))
     (setq
      js-indent-level 2
      js2-basic-offset 2
@@ -27,7 +29,46 @@
   :ensure t
   :mode "\\.ts$"
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2)
+(defun typescript--proper-indentation (parse-status)
+  "Return the proper indentation for the current line."
+  (save-excursion
+    (back-to-indentation)
+    (cond ((nth 4 parse-status)
+           (typescript--get-c-offset 'c (nth 8 parse-status)))
+          ((nth 8 parse-status) 0) ; inside string
+          ((typescript--ctrl-statement-indentation))
+          ((eq (char-after) ?#) 0)
+          ((save-excursion (typescript--beginning-of-macro)) 4)
+          ((nth 1 parse-status)
+           (let ((same-indent-p (looking-at
+                                 "[]})]\\|\\_<case\\_>\\|\\_<default\\_>"))
+                 (continued-expr-p (typescript--continued-expression-p)))
+             (goto-char (nth 1 parse-status))
+             (if (looking-at "[({[]\\s-*\\(/[/*]\\|$\\)")
+                 (progn
+                   (skip-syntax-backward " ")
+                   (when (eq (char-before) ?\)) (backward-list))
+                   (re-search-backward "[(]")
+                   (back-to-indentation)
+                   (cond (same-indent-p
+                          (current-column))
+                         (continued-expr-p
+                          (+ (current-column) (* 2 typescript-indent-level)
+                             typescript-expr-indent-offset))
+                         (t
+                          (+ (current-column) typescript-indent-level))))
+               (unless same-indent-p
+                 (forward-char)
+                 (skip-chars-forward " \t"))
+               (current-column))))
+
+          ((typescript--continued-expression-p)
+           (+ typescript-indent-level typescript-expr-indent-offset))
+          (t 0))))
+
+
+  )
 
 (use-package tide
   :ensure t
@@ -65,3 +106,5 @@
     ;; `M-x package-install [ret] company`
     (company-mode +1))
   )
+
+

@@ -32,7 +32,6 @@
       (retro-light-slate    "#465459")
       (retro-dark-slate     "#161A1F")
       (retro-light-blue     "#A7DBD8")
-      (retro-strong-green   "#AEE239")
       (retro-subtle-blue    "#A7DBD8")
       (retro-dirty-white    "#F8F8F0")
       (retro-lighter-orange "#FD971F")
@@ -41,14 +40,18 @@
       (white                "#FFFFFF")
       (bright-green         "#77FF77")
       (green                "#00FF00")
-      (purple               "#85678F")
+      (retro-strong-green   "#16BF41")
+      (purple               "#E1AEF2")
       (yellow               "#F0C674"))
 
   
-  ;; js2-warning js2-error js2-object-property
+  ;; js2-warning js2-error font-lock-keyword-face font-lock-variable-name-face font-lock-constant-face
   (custom-theme-set-faces
    'retro
-      `(js2-object-property  ((t (:foreground ,retro-orange))))
+   `(js2-object-property  ((t (:foreground ,retro-strong-green))))
+   `(js2-function-call  ((t (:foreground ,bright-green))))
+   `(js2-external-variable  ((t (:foreground ,bright-red))))
+   `(js2-function-param  ((t (:foreground ,yellow))))
 
      `(company-tooltip ((t (:background ,retro-background :box t))))
      `(company-scrollbar-bg ((t (:background ,retro-strong-green))))
@@ -72,7 +75,7 @@
    ;; Builtins
    `(font-lock-builtin-face ((t (:foreground ,retro-orange))))
    ;; Constants
-   `(font-lock-constant-face ((t (:foreground ,purple))))
+   `(font-lock-constant-face ((t (:foreground ,bright-red))))
    ;; Comments
    `(font-lock-comment-face ((t (:foreground ,retro-comment-slate))))
    ;; Function names

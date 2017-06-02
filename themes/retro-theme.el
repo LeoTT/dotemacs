@@ -27,7 +27,7 @@
       (retro-mid-gray       "#555555")
       (retro-light-gray     "#666666")
       (retro-lightest-gray  "#999999")
-      (retro-comment-slate  "#505C63")
+      (retro-comment-slate  "#CCCCCC")
       (retro-orange         "#F38630")
       (retro-light-slate    "#465459")
       (retro-dark-slate     "#161A1F")

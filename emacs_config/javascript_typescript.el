@@ -82,6 +82,9 @@
                             :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                             :placeOpenBraceOnNewLineForFunctions nil))))
 
+(use-package indium
+  :ensure t)
+
 (setq tide_disabled nil)
 
 (defun disable-tide()

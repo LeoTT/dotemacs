@@ -68,3 +68,10 @@
 
 (use-package eldoc
   :ensure t)
+
+(use-package helm
+  :ensure t)
+
+(use-package helm-ag
+  :ensure t
+  :bind (("M-ö" . helm-ag)))

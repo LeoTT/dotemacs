@@ -58,6 +58,8 @@
      `(company-scrollbar-fg ((t (:background ,retro-dark-slate))))
      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))
+
+     `(aw-leading-char-face ((t (:height 500 :foreground ,red))))
    ;; ----------------- Frame stuff --------------------
    `(default ((t (:background ,retro-background :foreground ,green))))
    `(cursor  ((t (:foreground ,white :background ,red))))

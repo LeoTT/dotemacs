@@ -24,13 +24,12 @@
      js2-skip-preprocessor-directives t
      js2-strict-inconsistent-return-warning nil)))
 
-
 (use-package typescript-mode
   :ensure t
   :mode "\\.ts$"
   :config
   (setq typescript-indent-level 2)
-  (add-hook 'js2-mode-hook
+  (add-hook 'typescript-mode-hook
             (lambda ()
               'prettify-symbols-mode            
               (push '("<=" . ?≤) prettify-symbols-alist)
@@ -73,6 +72,11 @@
             ((typescript--continued-expression-p)
              (+ typescript-indent-level typescript-expr-indent-offset))
             (t 0)))))
+
+
+
+
+
 
 (use-package tide
   :ensure t

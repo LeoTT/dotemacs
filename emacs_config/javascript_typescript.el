@@ -55,7 +55,11 @@
                    (progn
                      (skip-syntax-backward " ")
                      (when (eq (char-before) ?\)) (backward-list))
-                     (re-search-backward "[(]")
+
+                     (condition-case nil
+                         (re-search-backward "[(]")
+                     (error nil))
+                     
                      (back-to-indentation)
                      (cond (same-indent-p
                             (current-column))

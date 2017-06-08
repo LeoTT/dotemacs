@@ -1,5 +1,4 @@
-
-
+(add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
 (setq explicit-shell-file-name "/bin/bash")
 
@@ -11,6 +10,7 @@
 
 
 ;;; indentation
+(setq standard-indent 2)
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 2)
 (setq tab-width 2)

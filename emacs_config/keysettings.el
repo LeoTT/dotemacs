@@ -36,3 +36,4 @@
 (global-set-key (kbd "M-ö") 'dirgrep)
 
 
+(global-set-key (kbd "C-^") 'toggle-frame-maximized)

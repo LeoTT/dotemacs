@@ -29,6 +29,7 @@
   :mode "\\.ts$"
   :config
   (setq typescript-indent-level 2)
+  (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
   (add-hook 'typescript-mode-hook
             (lambda ()
               'prettify-symbols-mode            
@@ -56,9 +57,12 @@
                      (skip-syntax-backward " ")
                      (when (eq (char-before) ?\)) (backward-list))
 
-                     (condition-case nil
-                         (re-search-backward "[(]")
-                     (error nil))
+                     
+                     (if (is-current-line-end-of-function)
+                         (unless (string-match-p "[(]" (thing-at-point 'line t))
+                         (condition-case nil
+                             (re-search-backward "[(]")
+                           (error nil))))
                      
                      (back-to-indentation)
                      (cond (same-indent-p
@@ -72,7 +76,6 @@
                    (forward-char)
                    (skip-chars-forward " \t"))
                  (current-column))))
-
             ((typescript--continued-expression-p)
              (+ typescript-indent-level typescript-expr-indent-offset))
             (t 0)))))
@@ -122,4 +125,7 @@
     (company-mode +1))
   )
 
-
+(defun is-current-line-end-of-function ()
+    "returns nil if current line is end of a function expression"
+    (string-match-p ")\\(: [^ ]*\\)?\\ \\(=> \\)?{" (thing-at-point 'line t))
+    )

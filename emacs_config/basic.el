@@ -1,3 +1,5 @@
+(setq ring-bell-function 'ignore)
+
 (use-package magit
   :ensure t)
 

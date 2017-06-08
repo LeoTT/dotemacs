@@ -127,5 +127,4 @@
 
 (defun is-current-line-end-of-function ()
     "returns nil if current line is end of a function expression"
-    (string-match-p ")\\(: [^ ]*\\)?\\ \\(=> \\)?{" (thing-at-point 'line t))
-    )
+    (string-match-p ")\\(: [^ ]*\\)?\\ \\(=> \\)?{" (thing-at-point 'line t)))

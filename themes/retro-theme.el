@@ -48,9 +48,11 @@
   ;; js2-warning js2-error font-lock-keyword-face font-lock-variable-name-face font-lock-constant-face
   (custom-theme-set-faces
    'retro
-
+;;hl-line-face
+   `(eshell-prompt  ((t (:foreground ,yellow))))
    `(web-mode-html-attr-name-face  ((t (:foreground ,purple))))
    `(web-mode-html-tag-face  ((t (:foreground ,retro-strong-green))))
+   `(aw-leading-char-face  ((t (:foreground ,red :height 500))))
    
    `(js2-object-property  ((t (:foreground ,retro-strong-green))))
    `(js2-function-call  ((t (:foreground ,bright-green))))

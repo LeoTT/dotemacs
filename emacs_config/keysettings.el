@@ -37,3 +37,10 @@
 
 
 (global-set-key (kbd "C-^") 'toggle-frame-maximized)
+
+
+(global-set-key (kbd "<s-up>") 'windmove-up)
+(global-set-key (kbd "<s-left>") 'windmove-left)
+(global-set-key (kbd "<s-down>") 'windmove-down)
+(global-set-key (kbd "<s-right>") 'windmove-right)
+

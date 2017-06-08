@@ -1,7 +1,13 @@
 (setq ring-bell-function 'ignore)
 
-(use-package magit
+
+(use-package magit-gitflow
   :ensure t)
+
+(use-package magit
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 (use-package smex
   :ensure t
@@ -28,35 +34,27 @@
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   (ido-vertical-mode 1))
 
-;;(ido-vertical-mode 1)
-
-
-;; (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets") 
 (setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"                 ;; personal snippets
-        "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
-        "/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
-        "/path/to/yasnippet/snippets"         ;; the default collection
-        ))
+      '("~/.emacs.d/snippets"))
 
 ;; Flycheck
 (use-package flycheck
   :ensure t
   :config
   (progn 
-                 (flycheck-add-mode 'javascript-eslint 'web-mode)
-                 (flycheck-add-mode 'javascript-eslint 'js2-mode)
-                 (flycheck-add-mode 'typescript-tslint 'typescript-mode)
-                 (setq-default flycheck-disabled-checkers
-                               (append flycheck-disabled-checkers
-                                       '(javascript-jshint))
-                               
-                               flycheck-disabled-checkers
-                               (append flycheck-disabled-checkers
-                                       '(json-jsonlist))
-                               flycheck-temp-prefix ".flycheck")
-                 (global-flycheck-mode 1)
-                 ))
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-mode 'javascript-eslint 'js2-mode)
+    (flycheck-add-mode 'typescript-tslint 'typescript-mode)
+    (setq-default flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(javascript-jshint))
+                  
+                  flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(json-jsonlist))
+                  flycheck-temp-prefix ".flycheck")
+    (global-flycheck-mode 1)
+    ))
 
 
 

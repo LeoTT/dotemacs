@@ -7,7 +7,7 @@
     (add-hook 'js2-mode-hook 'prettify-symbols-mode)
     (add-hook 'js2-mode-hook
               (lambda ()
-                'prettify-symbols-mode            
+                'prettify-symbols-mode
                 (push '("<=" . ?≤) prettify-symbols-alist)
                 (push '(">=" . ?≥) prettify-symbols-alist)
                 (push '("=>" . ?⟹) prettify-symbols-alist)
@@ -32,7 +32,7 @@
   (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
   (add-hook 'typescript-mode-hook
             (lambda ()
-              'prettify-symbols-mode            
+              'prettify-symbols-mode
               (push '("<=" . ?≤) prettify-symbols-alist)
               (push '(">=" . ?≥) prettify-symbols-alist)
               (push '("=>" . ?⟹) prettify-symbols-alist)
@@ -57,13 +57,13 @@
                      (skip-syntax-backward " ")
                      (when (eq (char-before) ?\)) (backward-list))
 
-                     
+
                      (if (is-current-line-end-of-function)
                          (unless (string-match-p "[(]" (thing-at-point 'line t))
                          (condition-case nil
                              (re-search-backward "[(]")
                            (error nil))))
-                     
+
                      (back-to-indentation)
                      (cond (same-indent-p
                             (current-column))
@@ -92,7 +92,7 @@
   (progn
     (add-hook 'typescript-mode-hook #'setup-tide-mode)
     (add-hook 'js2-mode-hook #'setup-tide-mode)
-   
+    (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
     (setq tide-format-options '(
                             :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                             :placeOpenBraceOnNewLineForFunctions nil))))
@@ -114,11 +114,11 @@
   (interactive)
   (unless tide_disabled
     (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled)) 
+    ;; (flycheck-mode +1)
+    ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
     (tide-hl-identifier-mode +1)
-    
+
     ;; company is an optional dependency.You have to
     ;; install it separately via package-install
     ;; `M-x package-install [ret] company`

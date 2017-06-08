@@ -41,17 +41,22 @@
 (use-package flycheck
   :ensure t
   :config
-  (progn 
+  (progn
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-eslint 'js2-mode)
     (flycheck-add-mode 'typescript-tslint 'typescript-mode)
     (setq-default flycheck-disabled-checkers
                   (append flycheck-disabled-checkers
                           '(javascript-jshint))
-                  
+
                   flycheck-disabled-checkers
                   (append flycheck-disabled-checkers
                           '(json-jsonlist))
+
+                  ;; flycheck-disabled-checkers
+                  ;; (append flycheck-disabled-checkers
+                  ;;         '(typescript-tide))
+
                   flycheck-temp-prefix ".flycheck")
     (global-flycheck-mode 1)
     ))

@@ -5,13 +5,6 @@
   :config
   (progn
     (add-hook 'web-mode-hook 'prettify-symbols-mode)
-    (add-hook 'web-mode-hook
-              (lambda ()
-                'prettify-symbols-mode
-                (push '("<h2>" . "asda") prettify-symbols-alist)
-                (push '(">=" . ?≥) prettify-symbols-alist)
-                (push '("=>" . ?⟹) prettify-symbols-alist)
-                (push '("!==" . ?≠) prettify-symbols-alist)))
     (setq web-mode-enable-current-element-highlight t)
     (setq web-mode-markup-indent-offset 2)))
 

@@ -1,5 +1,9 @@
 (setq ring-bell-function 'ignore)
 
+(use-package yascroll
+  :ensure t
+  :config (global-yascroll-bar-mode 1))
+
 
 (use-package magit-gitflow
   :ensure t)

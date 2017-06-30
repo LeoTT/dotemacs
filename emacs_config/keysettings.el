@@ -1,6 +1,3 @@
-
-(global-set-key [C-tab] 'set-rectangular-region-anchor)
-
 (setq mac-option-modifier 'super)
 (setq mac-command-modifier 'meta)
 (setq ns-right-command-modifier 'alt)
@@ -35,18 +32,22 @@
 (define-key key-translation-map (kbd "A-q") (kbd "7"))
 (define-key key-translation-map (kbd "A-w") (kbd "8"))
 (define-key key-translation-map (kbd "A-e") (kbd "9"))
-
 (define-key key-translation-map (kbd "1") (kbd "!"))
 (define-key key-translation-map (kbd "2") (kbd "\""))
-(define-key key-translation-map (kbd "3") (kbd "§"))
+(define-key key-translation-map (kbd "3") (kbd "/"))
 (define-key key-translation-map (kbd "4") (kbd "$"))
 (define-key key-translation-map (kbd "5") (kbd "["))
 (define-key key-translation-map (kbd "6") (kbd "]"))
-(define-key key-translation-map (kbd "7") (kbd "{"))
-(define-key key-translation-map (kbd "8") (kbd "("))
-(define-key key-translation-map (kbd "9") (kbd ")"))
+(define-key key-translation-map (kbd "7") (kbd "("))
+(define-key key-translation-map (kbd "8") (kbd ")"))
+(define-key key-translation-map (kbd "9") (kbd "{"))
 (define-key key-translation-map (kbd "0") (kbd "}"))
-
+(define-key key-translation-map (kbd "ß") (kbd "?"))
+(define-key key-translation-map (kbd "?") (kbd "ß"))
+(define-key key-translation-map (kbd "ö") (kbd ";"))
+(define-key key-translation-map (kbd "ä") (kbd ":"))
+(define-key key-translation-map (kbd ";") (kbd "ö"))
+(define-key key-translation-map (kbd ":") (kbd "ä"))
 (define-key key-translation-map (kbd "#") (kbd "'"))
 (define-key key-translation-map (kbd "'") (kbd "#"))
 

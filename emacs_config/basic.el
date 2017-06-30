@@ -26,7 +26,8 @@
 
 (use-package ace-window
   :ensure t
-  :bind (("M-ü" . ace-window)))
+  :bind (("M-ü" . ace-window)
+         ("A-ü" . ace-window)))
 
 (use-package ido
   :ensure t

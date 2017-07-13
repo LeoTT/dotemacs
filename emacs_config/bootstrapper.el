@@ -5,3 +5,4 @@
 (load-file ".emacs.d/emacs_config/web.el")
 (load-file ".emacs.d/emacs_config/hooks.el")
 (load-file ".emacs.d/emacs_config/javascript_typescript.el")
+(load-file ".emacs.d/emacs_config/lisp.el")

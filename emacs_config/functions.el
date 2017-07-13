@@ -67,3 +67,11 @@
       (next-import)
           (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
 
+(defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
+  (when (member op-symbol '(copy move))
+    (let ((directory-name (if (< 1 (length files))
+                              ad-return-value
+                              (file-name-directory ad-return-value))))
+      (when (and (not (file-directory-p directory-name))
+                 (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
+        (make-directory directory-name t)))))

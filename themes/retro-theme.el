@@ -44,7 +44,7 @@
       (purple               "#E1AEF2")
       (yellow               "#F0C674"))
 
-  
+
   ;; js2-warning js2-error font-lock-keyword-face font-lock-variable-name-face font-lock-constant-face
   (custom-theme-set-faces
    'retro
@@ -53,7 +53,12 @@
    `(web-mode-html-attr-name-face  ((t (:foreground ,purple))))
    `(web-mode-html-tag-face  ((t (:foreground ,retro-strong-green))))
    `(aw-leading-char-face  ((t (:foreground ,red :height 500))))
-   
+
+   `(rainbow-delimiters-depth-1-face ((t (:foreground ,white))))
+   `(rainbow-delimiters-depth-2-face ((t (:foreground ,yellow))))
+   `(rainbow-delimiters-depth-3-face ((t (:foreground ,bright-red))))
+   `(rainbow-delimiters-depth-4-face ((t (:foreground ,purple))))
+
    `(js2-object-property  ((t (:foreground ,retro-strong-green))))
    `(js2-function-call  ((t (:foreground ,bright-green))))
    `(js2-external-variable  ((t (:foreground ,bright-red))))

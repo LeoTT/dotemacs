@@ -1,3 +1,5 @@
+import {a} from 'a';
+import {a} from 'a';
 (use-package js2-mode
   :ensure t
   :defer 1
@@ -118,10 +120,6 @@
     ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
     (tide-hl-identifier-mode +1)
-
-    ;; company is an optional dependency.You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
     (company-mode +1))
   )
 
@@ -132,7 +130,59 @@
 (defun aurelia-inject ()
   "Prompt user to enter a string, with input history support."
   (interactive)
-  (let ((module-name (read-string "Enter modulename:"))
-        (module-path (read-string "Enter relative path")))
+  (progn
+    (catch 'aurelia-inject-exit
 
-        (message "String is %s." module-name)))
+      (buffer-contains-class)
+
+      (let ((import-name (read-string "Enter classname: "))
+            (module-path (read-string "Enter modulename or relative path: "))
+            (var-name (read-string "Enter instance var name:  ")))
+        (save-excursion
+          (goto-char (point-min))
+          (insert (format "import {%s} from '%s';\n" import-name module-path))
+
+          (unless (ignore-errors (search-forward-regexp " *import +{ *\\(\\w*, *\\)*inject *\\(, *\\w* *\\)* *} *from *'aurelia-framework';"))
+            (if (ignore-errors (search-forward-regexp " *import +{[a-zA-Z ,]*} *from *'aurelia-framework';"))
+                (progn
+                  (search-backward "{")
+                  (forward-char)
+                  (insert "inject, "))
+              (insert "import {inject} from 'aurelia-framework'\n;"))
+
+            (if (ignore-errors (search-forward-regexp "@inject([a-zA-Z ,]*)"))
+                (progn
+                  (search-backward "(")
+                  (forward-char)
+                  (insert (format "%s, " import-name)))
+              (progn
+                (search-forward-regexp "\\(export\\)? *class [A-Za-z] *\\(extends *[a-zA-Z]*\\)? *\\(implements [a-zA-Z]*\\( *, *[a-zA-Z]\\)?\\)?")
+                (move-beginning-of-line 1)
+                (newline)
+                (insert (format "@inject(%s)\n" import-name))))
+            (progn
+              (search-forward-regexp "\\(export\\)? *class [A-Za-z] *\\(extends *[a-zA-Z]*\\)? *\\(implements [a-zA-Z]*\\( *, *[a-zA-Z]\\)?\\)?")
+              (move-end-of-line 1)
+              (newline)
+              (insert (format "private %s: %s" import-name var-name)))
+
+            (if (ignore-errors (search-forward-regexp "constructor("))
+                (progn
+                  (forward-char)
+                  (insert (format "%s: %s, " var-name import-name)))
+              (progn
+                (move-end-of-line 1)
+                (newline)
+                (insert (format "constructor(%s: %s) {\n\n}" var-name import-name))))))))))
+
+
+
+(defun buffer-contains-class ()
+  "throws 'aurelia-inject-exit error if no class is found"
+  (save-excursion
+    (save-match-datap
+      (goto-char (point-min))
+      (condition-case nil
+          (search-forward-regexp "\\(export\\)? *class [A-Za-z] *\\(extends *[a-zA-Z]*\\)? *\\(implements [a-zA-Z]*\\( *, *[a-zA-Z]\\)?\\)?")
+        (error (message "Buffer must contain a class to inject into.")
+               (throw 'aurelia-inject-exit nil))))))

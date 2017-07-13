@@ -4,7 +4,7 @@
   :interpreter "web"
   :config
   (progn
-    (add-hook 'web-mode-hook 'prettify-symbols-mode)
+    (setq web-mode-enable-auto-quoting nil)
     (setq web-mode-enable-current-element-highlight t)
     (setq web-mode-markup-indent-offset 2)))
 

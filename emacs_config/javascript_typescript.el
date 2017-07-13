@@ -128,3 +128,11 @@
 (defun is-current-line-end-of-function ()
     "returns nil if current line is end of a function expression"
     (string-match-p ")\\(: [^ ]*\\)?\\ \\(=> \\)?{" (thing-at-point 'line t)))
+
+(defun aurelia-inject ()
+  "Prompt user to enter a string, with input history support."
+  (interactive)
+  (let ((module-name (read-string "Enter modulename:"))
+        (module-path (read-string "Enter relative path")))
+
+        (message "String is %s." module-name)))

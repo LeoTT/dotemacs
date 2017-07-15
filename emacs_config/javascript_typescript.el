@@ -1,5 +1,3 @@
-import {a} from 'a';
-import {a} from 'a';
 (use-package js2-mode
   :ensure t
   :defer 1

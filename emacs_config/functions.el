@@ -7,7 +7,13 @@
 
 (global-set-key "\C-co" 'switch-to-minibuffer)
 
+(defun replace-in-subfolders ()
+  (interactive)
+    (let ((query-replace (read-string "Query replace:"))
+          (query-replace-with (read-string "Query replace with:"))
+          (query-replace-path (read-string "Path:")))
 
+      (shell-command (format "find %s -type f -exec sed -i '' s/%s/%s/g {} \\;" query-replace-path query-replace query-replace-with))))
 
 (defun what-face (pos)
   (interactive "d")

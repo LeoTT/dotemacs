@@ -2,6 +2,8 @@
 (setq mac-command-modifier 'meta)
 (setq ns-right-command-modifier 'alt)
 
+
+
 (global-set-key (kbd "s-5") nil)
 (define-key key-translation-map (kbd "s-5") (kbd "["))
 (global-set-key (kbd "s-6") nil)
@@ -24,12 +26,19 @@
 (define-key key-translation-map (kbd "<dead-acute>") (kbd "`"))
 (define-key key-translation-map (kbd "ö") (kbd ";"))
 (define-key key-translation-map (kbd "ä") (kbd ":"))
-(define-key key-translation-map (kbd ";") (kbd "ö"))
-(define-key key-translation-map (kbd ":") (kbd "ä"))
+(define-key key-translation-map (kbd ";") (kbd "Ö"))
+(define-key key-translation-map (kbd ":") (kbd "Ä"))
+(define-key key-translation-map (kbd "Ö") (kbd "ö"))
+(define-key key-translation-map (kbd "Ä") (kbd "ä"))
 (define-key key-translation-map (kbd "#") (kbd "'"))
 (define-key key-translation-map (kbd "'") (kbd "#"))
 
 (when (memq window-system '(mac ns))
+  (define-key key-translation-map (kbd "A-1") (kbd "1"))
+  (define-key key-translation-map (kbd "A-2") (kbd "2"))
+  (define-key key-translation-map (kbd "A-3") (kbd "3"))
+  (define-key key-translation-map (kbd "A-4") (kbd "4"))
+
   (define-key key-translation-map (kbd "A-<") (kbd "0"))
   (define-key key-translation-map (kbd "A-y") (kbd "1"))
   (define-key key-translation-map (kbd "A-x") (kbd "2"))
@@ -40,16 +49,21 @@
   (define-key key-translation-map (kbd "A-q") (kbd "7"))
   (define-key key-translation-map (kbd "A-w") (kbd "8"))
   (define-key key-translation-map (kbd "A-e") (kbd "9"))
-  (define-key key-translation-map (kbd "1") (kbd "!"))
-  (define-key key-translation-map (kbd "2") (kbd "\""))
-  (define-key key-translation-map (kbd "3") (kbd "/"))
-  (define-key key-translation-map (kbd "4") (kbd "$"))
-  (define-key key-translation-map (kbd "5") (kbd "["))
-  (define-key key-translation-map (kbd "6") (kbd "]"))
-  (define-key key-translation-map (kbd "7") (kbd "("))
-  (define-key key-translation-map (kbd "8") (kbd ")"))
+
+  (define-key key-translation-map (kbd "§") (kbd "&"))
+
+  (define-key key-translation-map (kbd "6") (kbd "/"))
+  (define-key key-translation-map (kbd "&") (kbd "\\"))
+
+  (define-key key-translation-map (kbd "7") (kbd "["))
+  (define-key key-translation-map (kbd "/") (kbd "]"))
+
+  (define-key key-translation-map (kbd "8") (kbd "("))
+  (define-key key-translation-map (kbd "(") (kbd ")"))
+
   (define-key key-translation-map (kbd "9") (kbd "{"))
-  (define-key key-translation-map (kbd "0") (kbd "}"))
+  (define-key key-translation-map (kbd ")") (kbd "}"))
+
   (define-key key-translation-map (kbd "ß") (kbd "?"))
   (define-key key-translation-map (kbd "?") (kbd "ß"))
 )

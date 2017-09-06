@@ -38,7 +38,7 @@
 (load-file ".emacs.d/emacs_config/bootstrapper.el")
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'retro t)
+(load-theme 'tron t)
 
 
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)

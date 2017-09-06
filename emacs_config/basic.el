@@ -1,5 +1,78 @@
 (setq ring-bell-function 'ignore)
 
+(use-package auctex
+  :ensure t
+  :defer t
+  :config(progn
+           (setq TeX-PDF-mode t)
+           (setq TeX-auto-save t)
+           (setq TeX-parse-self t)))
+
+(use-package hippie-exp
+  :ensure t
+  :defer t
+  :bind (("M-ä" . hippie-expand)))
+
+
+
+;; (use-package god-mode
+;;   :ensure t
+;;   :defer t
+;;   :config(progn
+;;            (global-set-key (kbd "<escape>") 'god-local-mode)
+;;            (define-key key-translation-map (kbd "6") (kbd "/"))
+;;            (defun weird-numbers ()
+;;              (progn (define-key key-translation-map (kbd "6") (kbd "/"))
+;;                     (define-key key-translation-map (kbd "&") (kbd "\\"))
+
+;;                     (define-key key-translation-map (kbd "7") (kbd "["))
+;;                     (define-key key-translation-map (kbd "/") (kbd "]"))
+
+;;                     (define-key key-translation-map (kbd "8") (kbd "("))
+;;                     (define-key key-translation-map (kbd "(") (kbd ")"))
+
+;;                     (define-key key-translation-map (kbd "9") (kbd "{"))
+;;                     (define-key key-translation-map (kbd ")") (kbd "}"))
+
+;;                     )
+;;              )
+;;            (defun original-numbers ()
+;;              (progn (define-key key-translation-map (kbd "6") (kbd "6"))
+;;                     (define-key key-translation-map (kbd "&") (kbd "&"))
+
+;;                     (define-key key-translation-map (kbd "7") (kbd "7"))
+;;                     (define-key key-translation-map (kbd "/") (kbd "/"))
+
+;;                     (define-key key-translation-map (kbd "8") (kbd "8"))
+;;                     (define-key key-translation-map (kbd "(") (kbd "("))
+
+;;                     (define-key key-translation-map (kbd "9") (kbd "9"))
+;;                     (define-key key-translation-map (kbd ")") (kbd ")"))
+
+;;                     )
+;;              )
+;;            (defun my-update-cursor ()
+;;              (setq cursor-type (if (or god-local-mode buffer-read-only)
+;;                                    'box
+;;                                  'bar)))
+
+;;            (add-hook 'god-mode-enabled-hook 'my-update-cursor)
+;;            (add-hook 'god-mode-disabled-hook 'my-update-cursor)
+
+;;            (add-hook 'god-mode-enabled-hook 'original-numbers)
+;;            (add-hook 'god-mode-disabled-hook 'weird-numbers)
+
+;;            (defun c/god-mode-update-cursor ()
+;;              (let ((limited-colors-p (> 257 (length (defined-colors)))))
+;;                (cond (god-local-mode (progn
+;;                                        (set-face-background 'mode-line "red")
+;;                                        (set-face-background 'mode-line-inactive "black")))
+;;                      (t (progn
+;;                           (set-face-background 'mode-line "green")
+;;                           (set-face-background 'mode-line-inactive "black")))))
+;;            )
+;;   ))
+
 (use-package yascroll
   :ensure t
   :config (global-yascroll-bar-mode 1))

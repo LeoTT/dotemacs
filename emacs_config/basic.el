@@ -1,9 +1,26 @@
 (setq ring-bell-function 'ignore)
 
+(use-package dim
+  :ensure t
+  :config(progn
+           (dim-major-names
+            '((emacs-lisp-mode           "EL")
+              (inferior-emacs-lisp-mode  "EL>")
+              (typescript-mode           "TS")
+              (calendar-mode             "📆")))
+           (dim-minor-names
+            '((tide-mode                 " ti")
+              (company-mode              " cmpy")
+              (eldoc-mode                " doc")))))
+
+(use-package emojify
+  :ensure t)
+
 (use-package auctex
   :ensure t
   :defer t
   :config(progn
+           (setq ispell-program-name "/usr/local/bin/aspell")
            (setq TeX-PDF-mode t)
            (setq TeX-auto-save t)
            (setq TeX-parse-self t)))

@@ -136,31 +136,36 @@ Would prefer init.elc as well, minor bug prevents me from byte-compiling, might 
    #+END_SRC
 *** navigation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package ace-jump-mode
-  :ensure t
-  :bind (("C-ü" . ace-jump-mode)
-         ("<f9>" . ace-jump-mode)
-         ("<f12>" . ace-jump-mode)
-         ("<f8>" . ace-jump-char-mode)))
-(use-package ace-window
-  :ensure t
-  :bind (("M-ü" . ace-window)
-         ("A-ü" . ace-window)))
-(use-package helm
-  :ensure t)
+     (use-package ace-jump-mode
+       :ensure t
+       :bind (("C-ü" . ace-jump-mode)
+              ("<f9>" . ace-jump-mode)
+              ("<f12>" . ace-jump-mode)
+              ("<f8>" . ace-jump-char-mode)))
+     (use-package ace-window
+       :ensure t
+       :bind (("M-ü" . ace-window)
+              ("A-ü" . ace-window)))
+     (use-package helm
+       :ensure t)
 
-(use-package helm-ag
-  :ensure t
-  :bind (("M-ö" . helm-ag)))
-(use-package ido
-  :ensure t
-  :config (ido-mode 1))
+     (use-package helm-ag
+       :ensure t
+       :bind (("M-ö" . helm-ag)))
+     (use-package ido
+       :ensure t
+       :config (ido-mode 1))
 
-(use-package ido-vertical-mode
-  :ensure t
-  :config
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-  (ido-vertical-mode 1))
+     (use-package ido-vertical-mode
+       :ensure t
+       :config
+       (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+       (ido-vertical-mode 1))
+
+     (use-package smex
+       :ensure t
+       :config (global-set-key (kbd "M-x") 'smex))
+
    #+END_SRC
 
 *** whitespace

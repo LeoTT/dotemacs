@@ -177,11 +177,17 @@ Would prefer init.elc as well, minor bug prevents me from byte-compiling, might 
 (setq backup-directory-alist `(("." . "~/.saves")))
 (setq backup-by-copying t)
    #+END_SRC
+*** epub
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (use-package nov
+       :ensure t
+     )
+   #+END_SRC
 ** programming
 *** general programming
 *** elisp
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package emacs-lisp-mode
+   #+BEGIN_SRC emacs-lisp
+(use-package emacs-lisp-mode :tangle ~/.emacs.d/init.el
   :init
   (progn
     (show-paren-mode t)

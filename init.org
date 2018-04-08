@@ -28,15 +28,16 @@
 *** os-specific
 **** osx
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(when (memq window-system '(mac ns))
-  (setq mac-option-modifier 'super)
-  (setq mac-command-modifier 'meta)
-  (setq ns-right-command-modifier 'alt)
+     (when (memq window-system '(mac ns))
+       (setq mac-option-modifier 'super)
+       (setq mac-command-modifier 'meta)
+       (setq ns-right-command-modifier 'alt))
 
-  (use-package exec-path-from-shell
-  :ensure t
-  :config (exec-path-from-shell-initialize))
-  (exec-path-from-shell-initialize))
+     (use-package exec-path-from-shell
+       :ensure t
+       :config (exec-path-from-shell-initialize))
+
+(exec-path-from-shell-initialize)
    #+END_SRC
 *** misc
 too lazy to describe this, probably not important
@@ -59,8 +60,6 @@ too lazy to describe this, probably not important
     #+END_SRC
 ** basic configuration
 *** org-tangle this init
-Whenever I save init.org I want a new init.el tangled from it.
-Would prefer init.elc as well, minor bug prevents me from byte-compiling, might fix soon.
   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
     (defun tangle-init ()
       "If the current buffer is 'init.org' the code-blocks are
@@ -101,18 +100,18 @@ Would prefer init.elc as well, minor bug prevents me from byte-compiling, might 
    #+END_SRC
 *** modeline
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package dim
-  :ensure t
-  :config(progn
-           (dim-major-names
-            '((emacs-lisp-mode           "EL")
-              (inferior-emacs-lisp-mode  "EL>")
-              (typescript-mode           "TS")
-              (calendar-mode             "📆")))
-           (dim-minor-names
-            '((tide-mode                 " ti")
-              (company-mode              " cmpy")
-              (eldoc-mode                " doc")))))
+     (use-package dim
+       :ensure t
+       :config
+       (dim-major-names
+        '((emacs-lisp-mode           "EL")
+          (inferior-emacs-lisp-mode  "EL>")
+          (typescript-mode           "TS")
+          (calendar-mode             "📆")))
+       (dim-minor-names
+        '((tide-mode                 " ti")
+          (company-mode              " cmpy")
+          (eldoc-mode                " doc"))))
    #+END_SRC
 *** scrollbar
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -183,52 +182,47 @@ Would prefer init.elc as well, minor bug prevents me from byte-compiling, might 
        :ensure t
      )
    #+END_SRC
+*** emacs documentation
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package which-key
+  :ensure t
+  :config
+    (which-key-mode))
+   #+END_SRC
 ** programming
-*** general programming
 *** elisp
-   #+BEGIN_SRC emacs-lisp
-(use-package emacs-lisp-mode :tangle ~/.emacs.d/init.el
-  :init
-  (progn
-    (show-paren-mode t)
-    (use-package rainbow-delimiters
-      :ensure t
-      :init
-      (electric-pair-mode t)
-      (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))))
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+     (add-hook 'emacs-lisp-mode-hook
+               '(lambda () (progn
+                             (show-paren-mode t)
+                             (electric-pair-mode t))))
+       ;; :init
+       ;;   (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+     (use-package rainbow-delimiters
+       :ensure t
+       :mode ("\\.el\\'" . emacs-lisp-mode))
    #+END_SRC
 *** web(html, css)
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (use-package web-mode
        :ensure t
-       :mode ("\\.html\\'"  "\\.css\\'")
+       :mode ("\\.html\\'"  "\\.css\\'" "\\.tsx\\'" "\\.jsx\\'")
        :interpreter "web"
        :config
-       (progn
-         (defun my-set-tab-mode ()
          (setq web-mode-enable-auto-quoting nil)
          (setq web-mode-enable-current-element-highlight t)
-         (setq web-mode-markup-indent-offset 2))))
+         (setq web-mode-markup-indent-offset 2))
 
      (use-package emmet-mode
        :ensure t
        :commands (emmet-mode)
        :init
-       (progn
-         (add-hook 'web-mode-hook #'emmet-mode))
+         (add-hook 'web-mode-hook #'emmet-mode)
        :config (when (and (stringp buffer-file-name)
                       (string-match "\\.css\\'" buffer-file-name))
                  (setq emmet-use-css-transform t)))
-     (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 
-     (add-hook 'java-mode-hook 'yas-minor-mode)
-     (add-hook 'web-mode-hook
-               (lambda ()
-                 (when (string-equal "jsx" (file-name-extension buffer-file-name))
-                   (setup-tide-mode))
-                 (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                   (setup-tide-mode))))
 
    #+END_SRC
 *** javascript

@@ -206,16 +206,19 @@ too lazy to describe this, probably not important
 ** programming
 *** elisp
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (defconst lisp--prettify-symbols-alist
+       '(("lambda"  . ?λ)))
 
-     (add-hook 'emacs-lisp-mode-hook
-               '(lambda () (progn
-                             (show-paren-mode t)
-                             (electric-pair-mode t))))
+          (add-hook 'emacs-lisp-mode-hook
+                    '(lambda () (progn
+                                  (prettify-symbols-mode t)
+                                  (show-paren-mode t)
+                                  (electric-pair-mode t))))
 
-     (use-package rainbow-delimiters
-       :ensure t
-       :init
-         (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
+          (use-package rainbow-delimiters
+            :ensure t
+            :init
+              (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
    #+END_SRC
 *** web(html, css)
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

@@ -9,6 +9,19 @@
   - restart
 - this configuration is structured and maintained using org-mode and use-package.
 - it is mostly about typescript/javascript and general editing as of now
+* todos
+** TODO quick websearch (engine-mode)
+** TODO init typescript files right
+(defun init-typescript-file (orig-fun &rest args)
+  (let ((new-buffer (apply orig-fun args)))
+    (with-current-buffer 'new-buffer (insert "test"))))
+(save-current-buffer
+     (set-buffer ,buffer-or-name)
+     ,@body)
+
+(advice-add 'create-file-buffer :around #'init-typescript-file)
+
+(advice-remove 'create-file-buffer #'init-typescript-file)
 * configuration
 ** theme
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -28,16 +41,16 @@
 *** os-specific
 **** osx
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (when (memq window-system '(mac ns))
-       (setq mac-option-modifier 'super)
-       (setq mac-command-modifier 'meta)
-       (setq ns-right-command-modifier 'alt))
+          (when (memq window-system '(mac ns))
+            (setq mac-option-modifier 'super
+                  mac-command-modifier 'meta
+                  ns-right-command-modifier 'alt))
 
-     (use-package exec-path-from-shell
-       :ensure t
-       :config (exec-path-from-shell-initialize))
+          (use-package exec-path-from-shell
+            :ensure t
+            :config (exec-path-from-shell-initialize))
 
-(exec-path-from-shell-initialize)
+     (exec-path-from-shell-initialize)
    #+END_SRC
 *** misc
 too lazy to describe this, probably not important
@@ -125,13 +138,14 @@ too lazy to describe this, probably not important
    #+END_SRC
 *** indentation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(setq standard-indent 2)
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq tab-width 2)
-(use-package indent-guide
-  :ensure t
-  :config (indent-guide-global-mode 1))
+     (setq standard-indent 2
+           tab-width 2)
+     (setq-default indent-tabs-mode nil
+                   tab-width 2)
+
+     (use-package indent-guide
+       :ensure t
+       :config (indent-guide-global-mode 1))
    #+END_SRC
 *** navigation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -173,8 +187,8 @@ too lazy to describe this, probably not important
    #+END_SRC
 *** backup
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(setq backup-directory-alist `(("." . "~/.saves")))
-(setq backup-by-copying t)
+     (setq backup-directory-alist `(("." . "~/.saves"))
+           backup-by-copying t)
    #+END_SRC
 *** epub
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -197,11 +211,11 @@ too lazy to describe this, probably not important
                '(lambda () (progn
                              (show-paren-mode t)
                              (electric-pair-mode t))))
-       ;; :init
-       ;;   (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+
      (use-package rainbow-delimiters
        :ensure t
-       :mode ("\\.el\\'" . emacs-lisp-mode))
+       :init
+         (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
    #+END_SRC
 *** web(html, css)
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -210,9 +224,9 @@ too lazy to describe this, probably not important
        :mode ("\\.html\\'"  "\\.css\\'" "\\.tsx\\'" "\\.jsx\\'")
        :interpreter "web"
        :config
-         (setq web-mode-enable-auto-quoting nil)
-         (setq web-mode-enable-current-element-highlight t)
-         (setq web-mode-markup-indent-offset 2))
+       (setq web-mode-enable-auto-quoting nil
+             web-mode-enable-current-element-highlight t
+             web-mode-markup-indent-offset 2))
 
      (use-package emmet-mode
        :ensure t
@@ -232,7 +246,6 @@ too lazy to describe this, probably not important
        :defer 1
        :mode "\\.js$"
        :config
-       (progn
          (add-hook 'js2-mode-hook 'prettify-symbols-mode)
          (add-hook 'js2-mode-hook
                    (lambda ()
@@ -251,7 +264,7 @@ too lazy to describe this, probably not important
           js2-concat-multiline-strings nil
           js2-include-node-externs t
           js2-skip-preprocessor-directives t
-          js2-strict-inconsistent-return-warning nil)))
+          js2-strict-inconsistent-return-warning nil))
 
      (use-package indium
        :ensure t)

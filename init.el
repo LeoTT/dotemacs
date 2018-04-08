@@ -1,50 +1,292 @@
-(require 'package)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
- '(custom-enabled-themes (quote (retro)))
- '(custom-safe-themes
-   (quote
-    ("08b2bddd32f3083e5f32aec29ceb4cea25486c8ad44a2ceba284141d690cb49d" "b0a55af488a76db5d53d8ca8e1efab5b028c74ce03cabbd7255218718f64a3ff" "26111c65019109a7cc9f64b6fb627bc34d3e17720c8e9cd0a3750b59155b810c" "c0ce540f5ac01be54634afca568da3412a634137bfdb82655fc4d81402c36180" "9bcf61d28f7414615d44011c9a327eebdcdb6cea69fff0367aa87fe4c07373c4" "ede1ad3d568e5f83b956217ab13d691b76b7247579249cedcf18128bc7d6a652" "cedd3b4295ac0a41ef48376e16b4745c25fa8e7b4f706173083f16d5792bb379" "d3547226ff98638079aec7cbd83560be847f0e0e6a825992a8d67986989dcd95" "2f93a94b830f966c015fe0d7ce316eb08d67de3d9dad4ca5348101e8216a5a86" "5863b785104f4b5f438ed2f5926518123d7194b33a3707b8a1c75a08341ee5bb" "fbd1323452426e5d1a5e074e0d9f8d7870409518239d662d04b30b520ba8c7ae" "5627630c7bada8a95314d3fcaa5e21cd41450235a1cae9b397cf6d3a6ba71bbd" "d492117c937cf58052a59a46a6d1d581cfd67931ba5c6cc67bd469f947eebf9a" "20ba845d7e5e77f9c533ede6ac65e118f48f1c8fbdfa0b82d2dd855f5bbd30f2" "efcd5ab62141d98157c30bf26d3fd71e18c6ecbbbc87a959cf578118be278336" "fff976954ad691949cf06127bb63c12bd24a11454ebbee20e8c76bed32aeee33" "11ff66c0b5dec32502c54d525804e9c298e86e65fa3d8e31ff954fa5d82d1f8b" "658850a13d46b29d0407c25833d2885ce7b7a88916cdcfced01dd4ac5e56d79a" "01972d61270a27e0a1858c7d0257bc4042ba86a7d6969a940aed0144f6677109" "2464f6eec375c9906b099e2a55815a23abc1ca5f8a05f9c0ba7e8a54c33bf49f" "1450cffa4036becea74d2376db9331f841c8ba4a7b1be16e3a97f32f9990be26" "844e74fee2364c233bd3a44c617a5c3049e7fba5e277b0e4ed6cda5c32d0bf5e" "ae6d6cec5509d5b92900601b25325289c45ebdb0cfc4545fac233c599b15c217" "382b35f978ee5d3a67c08d6528e6e7376a5d0ded88ee4b22039495c3d3ab91b5" "e5733a73a20fcdbf2a553f9b1cff7b36e708eef194280afc113e930dd6b382c8" "c4269d94fe9a37c01788111fde29d899922ca3c557baab9b4cc13c9e60c18cb4" "c6837a3b0bfbcd4874c6b7bee9964993779f9a627da4ed02b093bc5d6030e53d" "75bb58fcbf945c7f632b2e8d015e5422d0f19321f576e0a9c0da11f1177a974e" "6bb466c89b7e3eedc1f19f5a0cfa53be9baf6077f4d4a6f9b5d087f0231de9c8" "cd547ce0f7b19dc3747c7e89f8b9b0df616c1929ea4ba0e9b12ba2a46675839e" "780a4a3a3a968b7a3c1df1acd3d2b1ad4b6bde4d32dcfae84ec3c20f063c559c" "c0ebd7ce3bb188f0baaf44275799c82f1dc1b06bc24238cd5143f605886d9014" "96998f6f11ef9f551b427b8853d947a7857ea5a578c75aa9c4e7c73fe04d10b4" "58c6711a3b568437bab07a30385d34aacf64156cc5137ea20e799984f4227265" "e9776d12e4ccb722a2a732c6e80423331bcb93f02e089ba2a4b02e85de1cf00e" default)))
- '(markdown-command "/usr/local/bin/pandoc")
- '(menu-bar-mode nil)
- '(package-archives
-   (quote
-    (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "http://melpa.milkbox.net/packages/"))))
- '(package-selected-packages
-   (quote
-    (magit-gitflow tronesque-theme helm helm-ag indium exec-path-from-shell tide typescript-mode js2-mode use-package smex ido-vertical-mode ace-window ace-jump-mode)))
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(load-theme 'tron t)
 
+(setq ring-bell-function 'ignore)
+
+(tool-bar-mode -1)
+
+(when (memq window-system '(mac ns))
+       (setq mac-option-modifier 'super
+             mac-command-modifier 'meta
+             ns-right-command-modifier 'alt))
+
+     (use-package exec-path-from-shell
+       :ensure t
+       :config (exec-path-from-shell-initialize))
+
+(exec-path-from-shell-initialize)
+
+(put 'scroll-left 'disabled nil)
+(put 'erase-buffer 'disabled nil)
+(defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
+  (when (member op-symbol '(copy move))
+    (let ((directory-name (if (< 1 (length files))
+                              ad-return-value
+                              (file-name-directory ad-return-value))))
+      (when (and (not (file-directory-p directory-name))
+                 (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
+        (make-directory directory-name t)))))
+(defun what-face (pos)
+  (interactive "d")
+  (let ((face (or (get-char-property (point) 'read-face-name)
+                  (get-char-property (point) 'face))))
+    (if face (message "Face: %s" face) (message "No face at %d" pos))))
+
+(defun tangle-init ()
+  "If the current buffer is 'init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+  (when (equal (buffer-file-name)
+               (expand-file-name (concat user-emacs-directory "init.org")))
+    ;; Avoid running hooks when tangling.
+    (let ((prog-mode-hook nil))
+      (org-babel-tangle)
+      (byte-compile-file (concat user-emacs-directory "init.el")))))
+(add-hook 'after-save-hook 'tangle-init)
 
 (package-initialize)
-
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
 (eval-when-compile
   (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
 
-(load-file ".emacs.d/emacs_config/bootstrapper.el")
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'tron t)
+(setq org-src-fontify-natively t)
+
+(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+
+(use-package dim
+  :ensure t
+  :config
+  (dim-major-names
+   '((emacs-lisp-mode           "EL")
+     (inferior-emacs-lisp-mode  "EL>")
+     (typescript-mode           "TS")
+     (calendar-mode             "📆")))
+  (dim-minor-names
+   '((tide-mode                 " ti")
+     (company-mode              " cmpy")
+     (eldoc-mode                " doc"))))
+
+(use-package yascroll
+  :ensure t
+  :config (global-yascroll-bar-mode 1))
+
+(setq explicit-shell-file-name "/bin/bash")
+
+(setq standard-indent 2
+      tab-width 2)
+(setq-default indent-tabs-mode nil
+              tab-width 2)
+
+(use-package indent-guide
+  :ensure t
+  :config (indent-guide-global-mode 1))
+
+(use-package ace-jump-mode
+  :ensure t
+  :bind (("C-ü" . ace-jump-mode)
+         ("<f9>" . ace-jump-mode)
+         ("<f12>" . ace-jump-mode)
+         ("<f8>" . ace-jump-char-mode)))
+(use-package ace-window
+  :ensure t
+  :bind (("M-ü" . ace-window)
+         ("A-ü" . ace-window)))
+(use-package helm
+  :ensure t)
+
+(use-package helm-ag
+  :ensure t
+  :bind (("M-ö" . helm-ag)))
+(use-package ido
+  :ensure t
+  :config (ido-mode 1))
+
+(use-package ido-vertical-mode
+  :ensure t
+  :config
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+  (ido-vertical-mode 1))
+
+(use-package smex
+  :ensure t
+  :config (global-set-key (kbd "M-x") 'smex))
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(setq backup-directory-alist `(("." . "~/.saves"))
+      backup-by-copying t)
+
+(use-package nov
+  :ensure t
+)
+
+(use-package which-key
+  :ensure t
+  :config
+    (which-key-mode))
+
+(add-hook 'emacs-lisp-mode-hook
+          '(lambda () (progn
+                        (show-paren-mode t)
+                        (electric-pair-mode t))))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+    (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
+
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'"  "\\.css\\'" "\\.tsx\\'" "\\.jsx\\'")
+  :interpreter "web"
+  :config
+  (setq web-mode-enable-auto-quoting nil
+        web-mode-enable-current-element-highlight t
+        web-mode-markup-indent-offset 2))
+
+(use-package emmet-mode
+  :ensure t
+  :commands (emmet-mode)
+  :init
+    (add-hook 'web-mode-hook #'emmet-mode)
+  :config (when (and (stringp buffer-file-name)
+                 (string-match "\\.css\\'" buffer-file-name))
+            (setq emmet-use-css-transform t)))
+
+(use-package js2-mode
+  :ensure t
+  :defer 1
+  :mode "\\.js$"
+  :config
+    (add-hook 'js2-mode-hook 'prettify-symbols-mode)
+    (add-hook 'js2-mode-hook
+              (lambda ()
+                'prettify-symbols-mode
+                (push '("<=" . ?≤) prettify-symbols-alist)
+                (push '(">=" . ?≥) prettify-symbols-alist)
+                (push '("=>" . ?⟹) prettify-symbols-alist)
+                (push '("!==" . ?≠) prettify-symbols-alist)))
+    (font-lock-add-keywords 'js2-mode
+                            '(("require" . font-lock-keyword-face)))
+    (setq
+     js-indent-level 2
+     js2-basic-offset 2
+     js2-bounce-indent-p t
+     js2-strict-missing-semi-warning nil
+     js2-concat-multiline-strings nil
+     js2-include-node-externs t
+     js2-skip-preprocessor-directives t
+     js2-strict-inconsistent-return-warning nil))
+
+(use-package indium
+  :ensure t)
+
+(defun is-current-line-end-of-function ()
+    "returns nil if current line is end of a function expression"
+    (string-match-p ")\\(: [^ ]*\\)?\\ \\(=> \\)?{" (thing-at-point 'line t)))
+
+     (use-package tide
+       :ensure t
+       :defer 1
+       :bind (("C-c <up>" . tide-jump-to-definition))
+       :config
+       (progn
+         (add-hook 'typescript-mode-hook #'setup-tide-mode)
+         (add-hook 'js2-mode-hook #'setup-tide-mode)
+         (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
+         (setq tide-format-options '(
+                                 :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
+                                 :placeOpenBraceOnNewLineForFunctions nil))))
+
+     (use-package typescript-mode
+       :ensure t
+       :mode "\\.ts$"
+       :config
+       (setq typescript-indent-level 2)
+       (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
+       (add-hook 'typescript-mode-hook
+                 (lambda ()
+                   'prettify-symbols-mode
+                   (push '("<=" . ?≤) prettify-symbols-alist)
+                   (push '(">=" . ?≥) prettify-symbols-alist)
+                   (push '("=>" . ?⟹) prettify-symbols-alist)
+                   (push '("!==" . ?≠) prettify-symbols-alist)))
+       (defun typescript--proper-indentation (parse-status)
+         "Overwriting original function in order to fix multiparam/newline indentation"
+         (save-excursion
+           (back-to-indentation)
+           (cond ((nth 4 parse-status)
+                  (typescript--get-c-offset 'c (nth 8 parse-status)))
+                 ((nth 8 parse-status) 0) ; inside string
+                 ((typescript--ctrl-statement-indentation))
+                 ((eq (char-after) ?#) 0)
+                 ((save-excursion (typescript--beginning-of-macro)) 4)
+                 ((nth 1 parse-status)
+                  (let ((same-indent-p (looking-at
+                                        "[]})]\\|\\_<case\\_>\\|\\_<default\\_>"))
+                        (continued-expr-p (typescript--continued-expression-p)))
+                    (goto-char (nth 1 parse-status))
+                    (if (looking-at "[({[]\\s-*\\(/[/*]\\|$\\)")
+                        (progn
+                          (skip-syntax-backward " ")
+                          (when (eq (char-before) ?\)) (backward-list))
 
 
-(add-hook 'doc-view-mode-hook 'auto-revert-mode)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+                          (if (is-current-line-end-of-function)
+                              (unless (string-match-p "[(]" (thing-at-point 'line t))
+                              (condition-case nil
+                                  (re-search-backward "[(]")
+                                (error nil))))
+
+                          (back-to-indentation)
+                          (cond (same-indent-p
+                                 (current-column))
+                                (continued-expr-p
+                                 (+ (current-column) (* 2 typescript-indent-level)
+                                    typescript-expr-indent-offset))
+                                (t
+                                 (+ (current-column) typescript-indent-level))))
+                      (unless same-indent-p
+                        (forward-char)
+                        (skip-chars-forward " \t"))
+                      (current-column))))
+                 ((typescript--continued-expression-p)
+                  (+ typescript-indent-level typescript-expr-indent-offset))
+                 (t 0)))))
+     (defun setup-tide-mode()
+       (interactive)
+       (tide-setup)
+         ;; (flycheck-mode +1)
+         ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+         (eldoc-mode +1)
+         (tide-hl-identifier-mode +1)
+         (company-mode +1))
+     (defun next-import ()
+       (condition-case nil
+           (progn
+             (re-search-forward "^import.*from.*$")
+             (move-beginning-of-line 1))
+         (error
+          (goto-char (point-max)))))
+
+     (defun import-start-key ()
+       (search-forward "'" nil nil)
+       ;; find  a better way to return nil
+       (quote nil))
+
+     (defun import-sort ()
+         "Typescript/ES6 import sort"
+         (interactive)
+         (save-excursion
+           (goto-char (point-min))
+           (next-import)
+               (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
+
+

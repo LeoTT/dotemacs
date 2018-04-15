@@ -242,6 +242,18 @@ too lazy to describe this, probably not important
 
 
    #+END_SRC
+*** python
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (use-package company-jedi
+       :ensure t
+       :config (
+                (defun my/python-mode-hook ()
+                  (add-to-list 'company-backends 'company-jedi))
+
+                (add-hook 'python-mode-hook 'my/python-mode-hook)
+                ))
+
+   #+END_SRC
 *** javascript
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (use-package js2-mode

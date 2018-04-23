@@ -7,15 +7,15 @@
 (tool-bar-mode -1)
 
 (when (memq window-system '(mac ns))
-       (setq mac-option-modifier 'super
-             mac-command-modifier 'meta
-             ns-right-command-modifier 'alt))
+  (setq mac-option-modifier 'super
+        mac-command-modifier 'meta
+        ns-right-command-modifier 'alt))
 
-     (use-package exec-path-from-shell
-       :ensure t
-       :config (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
 
-(exec-path-from-shell-initialize)
+     (exec-path-from-shell-initialize)
 
 (put 'scroll-left 'disabled nil)
 (put 'erase-buffer 'disabled nil)
@@ -88,6 +88,10 @@ tangled, and the tangled file is compiled."
   :ensure t
   :config (indent-guide-global-mode 1))
 
+(use-package yasnippet
+  :ensure t
+  :config (yas-global-mode 1))
+
 (use-package ace-jump-mode
   :ensure t
   :bind (("C-ü" . ace-jump-mode)
@@ -132,15 +136,19 @@ tangled, and the tangled file is compiled."
   :config
     (which-key-mode))
 
-(add-hook 'emacs-lisp-mode-hook
-          '(lambda () (progn
-                        (show-paren-mode t)
-                        (electric-pair-mode t))))
+(defconst lisp--prettify-symbols-alist
+  '(("lambda"  . ?λ)))
 
-(use-package rainbow-delimiters
-  :ensure t
-  :init
-    (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
+     (add-hook 'emacs-lisp-mode-hook
+               '(lambda () (progn
+                             (prettify-symbols-mode t)
+                             (show-paren-mode t)
+                             (electric-pair-mode t))))
+
+     (use-package rainbow-delimiters
+       :ensure t
+       :init
+         (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
 
 (use-package web-mode
   :ensure t
@@ -159,6 +167,14 @@ tangled, and the tangled file is compiled."
   :config (when (and (stringp buffer-file-name)
                  (string-match "\\.css\\'" buffer-file-name))
             (setq emmet-use-css-transform t)))
+
+(use-package company-jedi
+  :ensure t
+  :config
+  (defun my/python-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi))
+
+  (add-hook 'python-mode-hook 'my/python-mode-hook))
 
 (use-package js2-mode
   :ensure t

@@ -1,4 +1,5 @@
 * about
+
 - initial setup:
   - clone this repo
   - rename it to .emacs.d
@@ -10,8 +11,11 @@
 - this configuration is structured and maintained using org-mode and use-package.
 - it is mostly about typescript/javascript and general editing as of now
 * todos
+
 ** TODO quick websearch (engine-mode)
+
 ** TODO init typescript files right
+
 (defun init-typescript-file (orig-fun &rest args)
   (let ((new-buffer (apply orig-fun args)))
     (with-current-buffer 'new-buffer (insert "test"))))
@@ -23,35 +27,39 @@
 
 (advice-remove 'create-file-buffer #'init-typescript-file)
 * configuration
+
 ** theme
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)
-   #+END_SRC
+#+END_SRC
 ** get rid of stuff
+
    I want my editor to be minimalistic. This section gets rid of toolbars, scrollbars, noise, etc.
 *** ring bell
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (setq ring-bell-function 'ignore)
-   #+END_SRC
+#+END_SRC
 *** disable toolbar
-       #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (tool-bar-mode -1)
-   #+END_SRC
+#+END_SRC
 *** os-specific
 **** osx
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-          (when (memq window-system '(mac ns))
-            (setq mac-option-modifier 'super
-                  mac-command-modifier 'meta
-                  ns-right-command-modifier 'alt))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(when (memq window-system '(mac ns))
+  (setq mac-option-modifier 'super
+        mac-command-modifier 'meta
+        ns-right-command-modifier 'alt))
 
-          (use-package exec-path-from-shell
-            :ensure t
-            :config (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
 
      (exec-path-from-shell-initialize)
-   #+END_SRC
+#+END_SRC
 *** misc
 too lazy to describe this, probably not important
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -146,6 +154,13 @@ too lazy to describe this, probably not important
      (use-package indent-guide
        :ensure t
        :config (indent-guide-global-mode 1))
+   #+END_SRC
+*** snippets
+
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (use-package yasnippet
+       :ensure t
+       :config (yas-global-mode 1))
    #+END_SRC
 *** navigation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

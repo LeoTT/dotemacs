@@ -27,16 +27,17 @@
 
 (advice-remove 'create-file-buffer #'init-typescript-file)
 * configuration
-
 ** theme
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)
 #+END_SRC
+
 ** get rid of stuff
 
    I want my editor to be minimalistic. This section gets rid of toolbars, scrollbars, noise, etc.
+
 *** ring bell
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -61,7 +62,7 @@
      (exec-path-from-shell-initialize)
 #+END_SRC
 *** misc
-too lazy to describe this, probably not important
+
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
       (put 'scroll-left 'disabled nil)
       (put 'erase-buffer 'disabled nil)
@@ -79,7 +80,9 @@ too lazy to describe this, probably not important
                         (get-char-property (point) 'face))))
           (if face (message "Face: %s" face) (message "No face at %d" pos))))
     #+END_SRC
+
 ** basic configuration
+
 *** org-tangle this init
   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
     (defun tangle-init ()
@@ -218,6 +221,7 @@ too lazy to describe this, probably not important
   :config
     (which-key-mode))
    #+END_SRC
+
 ** programming
 *** elisp
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

@@ -244,6 +244,13 @@ maximizes window without using useless osx fullscreen mode
        :ensure t
        :config (yas-global-mode 1))
    #+END_SRC
+*** presentation
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(load "~/.emacs.d/org-show/org-show")
+(require 'org-show)
+#+END_SRC
+
 *** navigation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (use-package ace-jump-mode

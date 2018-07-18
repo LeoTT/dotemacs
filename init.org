@@ -141,9 +141,30 @@ too lazy to describe this, probably not important
     #+END_SRC
 *** org-mode/latex
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-   (setq org-src-fontify-natively t)
-  #+END_SRC
+     (setq org-src-fontify-natively t)
+     (use-package auctex
+       :ensure t
+       :defer t
+       :config(progn
+                (setq ispell-program-name "/usr/local/bin/aspell")
+                (ispell-change-dictionary "de" t)
+                (flyspell-mode 1)
+                (setq TeX-PDF-mode t)
+                (setq TeX-auto-save t)
+                (setq TeX-parse-self t)))
+(require 'ox-latex)
+(unless (boundp 'org-latex-classes)
+  (setq org-latex-classes nil))
+(add-to-list 'org-latex-classes
+             '("myarticle" "\\documentclass[11pt]{myarticle}"
+  ("\\section{%s}" . "\\section*{%s}")
+  ("\\subsection{%s}" . "\\subsection*{%s}")
+  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+   #+END_SRC
 *** maximize window at startup
+maximizes window without using useless osx fullscreen mode
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-hook 'window-setup-hook 'toggle-frame-maximized t)
    #+END_SRC

@@ -294,7 +294,182 @@ smarter than emacs default auto-completion
   :config
     (which-key-mode))
    #+END_SRC
+*** keysettings
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (global-set-key (kbd "s-5") nil)
+     (define-key key-translation-map (kbd "s-5") (kbd "["))
+     (global-set-key (kbd "s-6") nil)
+     (define-key key-translation-map (kbd "s-6") (kbd "]"))
+     (global-set-key (kbd "s-7") nil)
+     (define-key key-translation-map (kbd "s-7") (kbd "|"))
+     (global-set-key (kbd "s-S-7") nil)
+     (define-key key-translation-map (kbd "s-S-7") (kbd "\\"))
+     (global-set-key (kbd "s-8") nil)
+     (define-key key-translation-map (kbd "s-8") (kbd "{"))
+     (global-set-key (kbd "s-9") nil)
+     (define-key key-translation-map (kbd "s-9") (kbd "}"))
+     (global-set-key (kbd "s-l") nil)
+     (define-key key-translation-map (kbd "s-l") (kbd "@"))
+     (global-set-key (kbd "s-/") nil)
+     (define-key key-translation-map (kbd "s-/") (kbd "\\"))
+     (global-set-key (kbd "s-n") nil)
+     (define-key key-translation-map (kbd "s-n") (kbd "~"))
+
+     (define-key key-translation-map (kbd "ö") (kbd ";"))
+     (define-key key-translation-map (kbd "ä") (kbd ":"))
+     (define-key key-translation-map (kbd ";") (kbd "Ö"))
+     (define-key key-translation-map (kbd ":") (kbd "Ä"))
+     (define-key key-translation-map (kbd "Ö") (kbd "ö"))
+     (define-key key-translation-map (kbd "Ä") (kbd "ä"))
+     (define-key key-translation-map (kbd "#") (kbd "'"))
+     (define-key key-translation-map (kbd "'") (kbd "#"))
+
+     (use-package key-chord
+       :ensure t
+       :config
+       (key-chord-mode t)
+       (key-chord-define-global "ff" 'find-file)
+       (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
+       (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
+       (key-chord-define-global "66" (lambda () (interactive) (insert "&")))
+       (key-chord-define-global "77" (lambda () (interactive) (insert "]")))
+       (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
+       (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+
+     (when (memq window-system '(mac ns))
+
+
+       (define-key key-translation-map (kbd "§") (kbd "&"))
+       (define-key key-translation-map (kbd "6") (kbd "6"))
+       (define-key key-translation-map (kbd "&") (kbd "/"))
+       (define-key key-translation-map (kbd "/") (kbd "["))
+       (define-key key-translation-map (kbd "9") (kbd "9"))
+       (define-key key-translation-map (kbd ")") (kbd "{"))
+       (define-key key-translation-map (kbd "ß") (kbd "?"))
+       (define-key key-translation-map (kbd "?") (kbd "ß"))
+     )
+
+     (global-set-key (kbd "C-S-n") 'copy-line)
+     ;; (global-set-key (kbd "M-ö") 'dirgrep)
+
+
+     (global-set-key (kbd "C-^") 'toggle-frame-maximized)
+
+     (global-set-key (kbd "<s-up>") 'windmove-up)
+     (global-set-key (kbd "<s-left>") 'windmove-left)
+     (global-set-key (kbd "<s-down>") 'windmove-down)
+     (global-set-key (kbd "<s-right>") 'windmove-right)
+   #+END_SRC
+*** flycheck
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package flycheck
+  :ensure t
+  :config
+  (progn
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-mode 'javascript-eslint 'js2-mode)
+    (flycheck-add-mode 'typescript-tslint 'typescript-mode)
+    (setq-default flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(javascript-jshint))
+
+                  flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(json-jsonlist))
+
+                  ;; flycheck-disabled-checkers
+                  ;; (append flycheck-disabled-checkers
+                  ;;         '(typescript-tide))
+
+                  flycheck-temp-prefix ".flycheck")
+    (global-flycheck-mode 1)))
+
+   #+END_SRC
+*** yasnippet
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package yasnippet
+:ensure t
+:config
+(yas-global-mode 1))
+
+#+END_SRC
+
+*** presentation
+based on orgmode, pandoc, revealjs
+- =init-presentation= creates empty project
+- =compile-presentation= uses org-tangle and pandoc to create project(maybe not tangle but custom pandoc template)
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(defun init-presentation ()
+  (interactive)
+  (shell-command "wget https://github.com/hakimel/reveal.js/archive/master.tar.gz")
+  (shell-command "tar -xzvf master.tar.gz")
+  (shell-command "Mv reveal.js-master reveal.js"))
+(require 'ox-pandoc)
+(require 'org)
+*** org languages
+
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (awk . t)
+     (calc .t)
+     (C . t)
+     (emacs-lisp . t)
+     (haskell . t)
+     (gnuplot . t)
+     (latex . t)
+     ;;(ledger . t)
+     (js . t)
+     (haskell . t)
+     (perl . t)
+     (python . t)
+     ;; (gnuplot . t)
+     (sh . t)))
+#+END_SRC
+
+#+END_SRC
+
+*** 1984
+I want to track what I'm doing and when.
+This adds an entry in a csv file for every saved file
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(defun make-1984-entry ()
+  (interactive)
+  (let* (
+;; (description (read-string "What are you doing(no commata):"))
+       (current-date (calendar-current-date))
+       (current-year (nth 2 current-date))
+       (current-month (car current-date))
+       (current-day (nth 1 current-date))
+       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month current-day)))
+  (make-directory output-directory t)
+  (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
+;;                         description
+                         (current-time-string)
+                         buffer-file-name
+                         output-directory
+                         current-day))))
+
+(add-hook 'after-save-hook 'make-1984-entry)
+#+END_SRC
+
 ** programming
+*** haskell
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     ;; (use-package haskell-mode
+     ;;   :ensure t
+     ;;   :mode "\\.hs$"
+     ;;   :config
+     ;;     (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
+     ;;     (add-hook 'haskell-mode-hook
+     ;;               (lambda ()
+     ;;                 (push '("<=" . ?≤) prettify-symbols-alist)
+     ;;                 (push '("->" . ?→) prettify-symbols-alist)
+     ;;                 (push '(">=" . ?≥) prettify-symbols-alist)
+     ;;                 (push '("!=" . ?≠) prettify-symbols-alist))))
+   #+END_SRC
 *** elisp
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (defconst lisp--prettify-symbols-alist

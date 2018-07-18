@@ -22,8 +22,44 @@
 (advice-add 'create-file-buffer :around #'init-typescript-file)
 
 (advice-remove 'create-file-buffer #'init-typescript-file)
+** secondary selection
+(global-unset-key (kbd "<M-drag-mouse-1>"))   ; was mouse-set-secondary
+(global-unset-key (kbd "<M-down-mouse-1>"))   ; was mouse-drag-secondary
+(global-unset-key (kbd "<M-mouse-1>"))	  ; was mouse-start-secondary
+(global-unset-key (kbd "<M-mouse-2>"))	  ; was mouse-yank-secondary
+(global-unset-key (kbd "<M-mouse-3>"))	  ; was mouse-secondary-save-then-kill
 * configuration
+** configuring the configuration
+this should stay at the top.
+*** org-tangle this init
+whenever I save init.org I want a new init.elc tangled and byte-compiled from it.
+  #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+    (defun tangle-init ()
+      "If the current buffer is 'init.org' the code-blocks are
+    tangled, and the tangled file is compiled."
+      (when (equal (buffer-file-name)
+                   (expand-file-name (concat user-emacs-directory "init.org")))
+        ;; Avoid running hooks when tangling.
+        (let ((prog-mode-hook nil))
+          (org-babel-tangle)
+          (byte-compile-file (concat user-emacs-directory "init.el")))))
+    (add-hook 'after-save-hook 'tangle-init)
+  #+END_SRC
+*** setup use-package
+    use-package helps managing packages(download, lazy load, clean initializing and more).
+    This part installs use-package if needed
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (eval-when-compile
+      (require 'use-package))
+    (require 'diminish)
+    (require 'bind-key)
+    #+END_SRC
 ** theme
+self made theme, trying to make this look a bit like tron
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)

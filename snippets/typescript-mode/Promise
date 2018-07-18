@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Promise
+# key: pr
+# --
+Promise<$1>

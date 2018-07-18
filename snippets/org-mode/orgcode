@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: orgcode
+# key: orgcode
+# --
+#+BEGIN_SRC ${1:emacs-lisp} :tangle ${2:~/.emacs.d/init.el}
+    $0
+#+END_SRC

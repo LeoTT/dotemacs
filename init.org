@@ -74,13 +74,27 @@ self made theme, trying to make this look a bit like tron
        #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (tool-bar-mode -1)
    #+END_SRC
+*** scrollbar
+scrollbars take too many pixels
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(scroll-bar-mode 0)
+   #+END_SRC
+** basic configuration
+*** register melpa package archives
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(add-to-list
+   'package-archives
+   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   t)
+    #+END_SRC
 *** os-specific
 **** osx
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-          (when (memq window-system '(mac ns))
-            (setq mac-option-modifier 'super
-                  mac-command-modifier 'meta
-                  ns-right-command-modifier 'alt))
+(when (memq window-system '(mac ns))
+  (setq mac-option-modifier 'super
+        mac-command-modifier 'meta
+        ns-right-command-modifier 'alt))
 
           (use-package exec-path-from-shell
             :ensure t

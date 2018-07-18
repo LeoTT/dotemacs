@@ -1,4 +1,5 @@
 * about
+
 - initial setup:
   - clone this repo
   - rename it to .emacs.d
@@ -10,8 +11,11 @@
 - this configuration is structured and maintained using org-mode and use-package.
 - it is mostly about typescript/javascript and general editing as of now
 * todos
+
 ** TODO quick websearch (engine-mode)
+
 ** TODO init typescript files right
+
 (defun init-typescript-file (orig-fun &rest args)
   (let ((new-buffer (apply orig-fun args)))
     (with-current-buffer 'new-buffer (insert "test"))))
@@ -59,26 +63,34 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
     (require 'bind-key)
     #+END_SRC
 ** theme
-self made theme, trying to make this look a bit like tron
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)
-   #+END_SRC
+#+END_SRC
+
 ** get rid of stuff
+
    I want my editor to be minimalistic. This section gets rid of toolbars, scrollbars, noise, etc.
+
 *** ring bell
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (setq ring-bell-function 'ignore)
-   #+END_SRC
+#+END_SRC
+
 *** disable toolbar
-       #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (tool-bar-mode -1)
-   #+END_SRC
+#+END_SRC
+
 *** scrollbar
+
 scrollbars take too many pixels
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (scroll-bar-mode 0)
    #+END_SRC
+
 ** basic configuration
 *** register melpa package archives
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -91,19 +103,24 @@ scrollbars take too many pixels
 *** os-specific
 **** osx
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+#+END_SRC
+*** os-specific
+**** osx
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (when (memq window-system '(mac ns))
   (setq mac-option-modifier 'super
         mac-command-modifier 'meta
         ns-right-command-modifier 'alt))
 
-          (use-package exec-path-from-shell
-            :ensure t
-            :config (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize))
 
      (exec-path-from-shell-initialize)
-   #+END_SRC
+#+END_SRC
 *** misc
-too lazy to describe this, probably not important
+
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
       (put 'scroll-left 'disabled nil)
       (put 'erase-buffer 'disabled nil)
@@ -121,7 +138,9 @@ too lazy to describe this, probably not important
                         (get-char-property (point) 'face))))
           (if face (message "Face: %s" face) (message "No face at %d" pos))))
     #+END_SRC
+
 ** basic configuration
+
 *** org-tangle this init
   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
     (defun tangle-init ()
@@ -218,6 +237,13 @@ maximizes window without using useless osx fullscreen mode
        :ensure t
        :config (indent-guide-global-mode 1))
    #+END_SRC
+*** snippets
+
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+     (use-package yasnippet
+       :ensure t
+       :config (yas-global-mode 1))
+   #+END_SRC
 *** navigation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (use-package ace-jump-mode
@@ -294,6 +320,7 @@ smarter than emacs default auto-completion
   :config
     (which-key-mode))
    #+END_SRC
+
 *** keysettings
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (global-set-key (kbd "s-5") nil)

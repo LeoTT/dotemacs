@@ -252,9 +252,29 @@ maximizes window without using useless osx fullscreen mode
 
    #+END_SRC
 
+*** autocompletion
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+smarter than emacs default auto-completion
+(use-package hippie-exp
+  :ensure t
+  :defer t
+  :bind (("M-ä" . hippie-expand)))
+   #+END_SRC
 *** whitespace
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+   #+END_SRC
+*** git porcelain
+   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+(use-package magit-gitflow
+  :ensure t)
+
+(use-package magit
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
+
    #+END_SRC
 *** backup
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

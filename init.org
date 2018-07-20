@@ -10,28 +10,6 @@
   - restart
 - this configuration is structured and maintained using org-mode and use-package.
 - it is mostly about typescript/javascript and general editing as of now
-* todos
-
-** TODO quick websearch (engine-mode)
-
-** TODO init typescript files right
-
-(defun init-typescript-file (orig-fun &rest args)
-  (let ((new-buffer (apply orig-fun args)))
-    (with-current-buffer 'new-buffer (insert "test"))))
-(save-current-buffer
-     (set-buffer ,buffer-or-name)
-     ,@body)
-
-(advice-add 'create-file-buffer :around #'init-typescript-file)
-
-(advice-remove 'create-file-buffer #'init-typescript-file)
-** secondary selection
-(global-unset-key (kbd "<M-drag-mouse-1>"))   ; was mouse-set-secondary
-(global-unset-key (kbd "<M-down-mouse-1>"))   ; was mouse-drag-secondary
-(global-unset-key (kbd "<M-mouse-1>"))	  ; was mouse-start-secondary
-(global-unset-key (kbd "<M-mouse-2>"))	  ; was mouse-yank-secondary
-(global-unset-key (kbd "<M-mouse-3>"))	  ; was mouse-secondary-save-then-kill
 * configuration
 ** configuring the configuration
 this should stay at the top.

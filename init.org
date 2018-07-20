@@ -301,71 +301,67 @@ maximizes window without using useless osx fullscreen mode
    #+END_SRC
 
 *** keysettings
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (global-set-key (kbd "s-5") nil)
-     (define-key key-translation-map (kbd "s-5") (kbd "["))
-     (global-set-key (kbd "s-6") nil)
-     (define-key key-translation-map (kbd "s-6") (kbd "]"))
-     (global-set-key (kbd "s-7") nil)
-     (define-key key-translation-map (kbd "s-7") (kbd "|"))
-     (global-set-key (kbd "s-S-7") nil)
-     (define-key key-translation-map (kbd "s-S-7") (kbd "\\"))
-     (global-set-key (kbd "s-8") nil)
-     (define-key key-translation-map (kbd "s-8") (kbd "{"))
-     (global-set-key (kbd "s-9") nil)
-     (define-key key-translation-map (kbd "s-9") (kbd "}"))
-     (global-set-key (kbd "s-l") nil)
-     (define-key key-translation-map (kbd "s-l") (kbd "@"))
-     (global-set-key (kbd "s-/") nil)
-     (define-key key-translation-map (kbd "s-/") (kbd "\\"))
-     (global-set-key (kbd "s-n") nil)
-     (define-key key-translation-map (kbd "s-n") (kbd "~"))
 
-     (define-key key-translation-map (kbd "ö") (kbd ";"))
-     (define-key key-translation-map (kbd "ä") (kbd ":"))
-     (define-key key-translation-map (kbd ";") (kbd "Ö"))
-     (define-key key-translation-map (kbd ":") (kbd "Ä"))
-     (define-key key-translation-map (kbd "Ö") (kbd "ö"))
-     (define-key key-translation-map (kbd "Ä") (kbd "ä"))
-     (define-key key-translation-map (kbd "#") (kbd "'"))
-     (define-key key-translation-map (kbd "'") (kbd "#"))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (defun overwrite-keys (keypairs)
+    (dolist (keypair keypairs)
+      (let ((old-key (car keypair))
+            (new-key (cdr keypair)))
+        (global-set-key (kbd old-key) nil)
+        (define-key key-translation-map (kbd old-key) (kbd new-key)))))
 
-     (use-package key-chord
-       :ensure t
-       :config
-       (key-chord-mode t)
-       (key-chord-define-global "ff" 'find-file)
-       (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
-       (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
-       (key-chord-define-global "66" (lambda () (interactive) (insert "&")))
-       (key-chord-define-global "77" (lambda () (interactive) (insert "]")))
-       (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
-       (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+  ;; mappings for osx-alt
+  (overwrite-keys '(("s-5" . "[")
+                    ("s-6" . "]")
+                    ("s-7" . "|")
+                    ("s-S-7" . "\\")
+                    ("s-8" . "{")
+                    ("s-9" . "}")
+                    ("s-l" . "@")
+                    ("s-/" . "\\")
+                    ("s-n" . "~")))
 
-     (when (memq window-system '(mac ns))
+  (global-set-key (kbd "<s-up>") 'windmove-up)
+  (global-set-key (kbd "<s-left>") 'windmove-left)
+  (global-set-key (kbd "<s-down>") 'windmove-down)
+  (global-set-key (kbd "<s-right>") 'windmove-right)
+
+  (overwrite-keys '(("ö" . ";")
+                    ("ä" . ":")
+                    (";" . "Ö")
+                    (":" . "Ä")
+                    ("Ö" . "ö")
+                    ("Ä" . "ä")
+                    ("#" . "'")
+                    ("'" . "#")))
+
+  (use-package key-chord
+    :ensure t
+    :config
+    (key-chord-mode t)
+    (key-chord-define-global "ff" 'find-file)
+    (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
+    (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
+    (key-chord-define-global "66" (lambda () (interactive) (insert "&")))
+    (key-chord-define-global "77" (lambda () (interactive) (insert "]")))
+    (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
+    (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+
+  (when (memq window-system '(mac ns))
+    (overwrite-keys '(("§" . "&")
+                      ("6" . "6")
+                      ("&" . "/")
+                      ("/" . "[")
+                      ("9" . "9")
+                      (")" . "{")
+                      ("ß" . "?")
+                      ("?" . "ß"))))
+
+  (global-set-key (kbd "C-^") 'toggle-frame-maximized)
 
 
-       (define-key key-translation-map (kbd "§") (kbd "&"))
-       (define-key key-translation-map (kbd "6") (kbd "6"))
-       (define-key key-translation-map (kbd "&") (kbd "/"))
-       (define-key key-translation-map (kbd "/") (kbd "["))
-       (define-key key-translation-map (kbd "9") (kbd "9"))
-       (define-key key-translation-map (kbd ")") (kbd "{"))
-       (define-key key-translation-map (kbd "ß") (kbd "?"))
-       (define-key key-translation-map (kbd "?") (kbd "ß"))
-     )
+#+END_SRC
 
-     (global-set-key (kbd "C-S-n") 'copy-line)
-     ;; (global-set-key (kbd "M-ö") 'dirgrep)
-
-
-     (global-set-key (kbd "C-^") 'toggle-frame-maximized)
-
-     (global-set-key (kbd "<s-up>") 'windmove-up)
-     (global-set-key (kbd "<s-left>") 'windmove-left)
-     (global-set-key (kbd "<s-down>") 'windmove-down)
-     (global-set-key (kbd "<s-right>") 'windmove-right)
-   #+END_SRC
 *** flycheck
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package flycheck

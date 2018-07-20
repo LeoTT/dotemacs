@@ -78,11 +78,32 @@ scrollbars take too many pixels
    '("melpa" . "http://melpa.milkbox.net/packages/")
    t)
     #+END_SRC
-*** os-specific
-**** osx
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-
-#+END_SRC
+*** org-tangle this init
+  #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+    (defun tangle-init ()
+      "If the current buffer is 'init.org' the code-blocks are
+    tangled, and the tangled file is compiled."
+      (when (equal (buffer-file-name)
+                   (expand-file-name (concat user-emacs-directory "init.org")))
+        ;; Avoid running hooks when tangling.
+        (let ((prog-mode-hook nil))
+          (org-babel-tangle)
+          (byte-compile-file (concat user-emacs-directory "init.el")))))
+    (add-hook 'after-save-hook 'tangle-init)
+  #+END_SRC
+*** setup use-package
+    use-package helps managing packages(download, lazy load, clean initializing and more).
+    This part installs use-package if needed
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (eval-when-compile
+      (require 'use-package))
+    (require 'diminish)
+    (require 'bind-key)
+    #+END_SRC
 *** os-specific
 **** osx
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -116,39 +137,12 @@ scrollbars take too many pixels
                         (get-char-property (point) 'face))))
           (if face (message "Face: %s" face) (message "No face at %d" pos))))
     #+END_SRC
-
-** basic configuration
-
-*** org-tangle this init
-  #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (defun tangle-init ()
-      "If the current buffer is 'init.org' the code-blocks are
-    tangled, and the tangled file is compiled."
-      (when (equal (buffer-file-name)
-                   (expand-file-name (concat user-emacs-directory "init.org")))
-        ;; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil))
-          (org-babel-tangle)
-          (byte-compile-file (concat user-emacs-directory "init.el")))))
-    (add-hook 'after-save-hook 'tangle-init)
-  #+END_SRC
-*** setup use-package
-    use-package helps managing packages(download, lazy load, clean initializing and more).
-    This part installs use-package if needed
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (package-initialize)
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
-    (eval-when-compile
-      (require 'use-package))
-    (require 'diminish)
-    (require 'bind-key)
-    #+END_SRC
 *** register melpa package archives
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+;; (add-to-list 'package-archives
+;;              '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
+             '("melpa" . "https://melpa.org/packages/"))
     #+END_SRC
 *** org-mode/latex
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -264,8 +258,8 @@ maximizes window without using useless osx fullscreen mode
    #+END_SRC
 
 *** autocompletion
+
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-smarter than emacs default auto-completion
 (use-package hippie-exp
   :ensure t
   :defer t
@@ -416,6 +410,8 @@ based on orgmode, pandoc, revealjs
   (shell-command "wget https://github.com/hakimel/reveal.js/archive/master.tar.gz")
   (shell-command "tar -xzvf master.tar.gz")
   (shell-command "Mv reveal.js-master reveal.js"))
+(use-package ox-pandoc
+  :ensure t)
 (require 'ox-pandoc)
 (require 'org)
 #+END_SRC

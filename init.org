@@ -27,6 +27,18 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
           (byte-compile-file (concat user-emacs-directory "init.el")))))
     (add-hook 'after-save-hook 'tangle-init)
   #+END_SRC
+
+*** register melpa package archives
+
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(require 'package)
+(add-to-list
+   'package-archives
+   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   t)
+    #+END_SRC
+
 *** setup use-package
     use-package helps managing packages(download, lazy load, clean initializing and more).
     This part installs use-package if needed
@@ -37,8 +49,6 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
       (package-install 'use-package))
     (eval-when-compile
       (require 'use-package))
-    (require 'diminish)
-    (require 'bind-key)
     #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -70,47 +80,21 @@ scrollbars take too many pixels
    #+END_SRC
 
 ** basic configuration
-*** register melpa package archives
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(add-to-list
-   'package-archives
-   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
-   '("melpa" . "http://melpa.milkbox.net/packages/")
-   t)
-    #+END_SRC
-*** org-tangle this init
-  #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (defun tangle-init ()
-      "If the current buffer is 'init.org' the code-blocks are
-    tangled, and the tangled file is compiled."
-      (when (equal (buffer-file-name)
-                   (expand-file-name (concat user-emacs-directory "init.org")))
-        ;; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil))
-          (org-babel-tangle)
-          (byte-compile-file (concat user-emacs-directory "init.el")))))
-    (add-hook 'after-save-hook 'tangle-init)
-  #+END_SRC
-*** setup use-package
-    use-package helps managing packages(download, lazy load, clean initializing and more).
-    This part installs use-package if needed
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (package-initialize)
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
-    (eval-when-compile
-      (require 'use-package))
-    (require 'diminish)
-    (require 'bind-key)
-    #+END_SRC
+*** diminish
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package diminish
+:ensure t)
+(use-package bind-key
+:ensure t)
+#+END_SRC
 *** os-specific
 **** osx
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (when (memq window-system '(mac ns))
   (setq mac-option-modifier 'super
         mac-command-modifier 'meta
-        ns-right-command-modifier 'alt))
+        ns-right-command-modifier 'alt
+        ns-transparent-titlebar t))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -120,30 +104,24 @@ scrollbars take too many pixels
 #+END_SRC
 *** misc
 
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-      (put 'scroll-left 'disabled nil)
-      (put 'erase-buffer 'disabled nil)
-      (defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
-        (when (member op-symbol '(copy move))
-          (let ((directory-name (if (< 1 (length files))
-                                    ad-return-value
-                                    (file-name-directory ad-return-value))))
-            (when (and (not (file-directory-p directory-name))
-                       (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
-              (make-directory directory-name t)))))
-      (defun what-face (pos)
-        (interactive "d")
-        (let ((face (or (get-char-property (point) 'read-face-name)
-                        (get-char-property (point) 'face))))
-          (if face (message "Face: %s" face) (message "No face at %d" pos))))
-    #+END_SRC
-*** register melpa package archives
-    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-;; (add-to-list 'package-archives
-;;              '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (put 'scroll-left 'disabled nil)
+  (put 'erase-buffer 'disabled nil)
+  (defadvice dired-mark-read-file-name (after rv:dired-create-dir-when-needed (prompt dir op-symbol arg files &optional default) activate)
+    (when (member op-symbol '(copy move))
+      (let ((directory-name (if (< 1 (length files))
+                                ad-return-value
+                                (file-name-directory ad-return-value))))
+        (when (and (not (file-directory-p directory-name))
+                   (y-or-n-p (format "directory %s doesn't exist, create it?" directory-name)))
+          (make-directory directory-name t)))))
+  (defun what-face (pos)
+    (interactive "d")
+    (let ((face (or (get-char-property (point) 'read-face-name)
+                    (get-char-property (point) 'face))))
+      (if face (message "Face: %s" face) (message "No face at %d" pos))))
+#+END_SRC
+
 *** org-mode/latex
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
      (setq org-src-fontify-natively t)
@@ -219,8 +197,8 @@ maximizes window without using useless osx fullscreen mode
 *** presentation
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(load "~/.emacs.d/org-show/org-show")
-(require 'org-show)
+;;(load "~/.emacs.d/org-show/org-show")
+;;(require 'org-show)
 #+END_SRC
 
 *** navigation
@@ -307,19 +285,7 @@ maximizes window without using useless osx fullscreen mode
     (dolist (keypair keypairs)
       (let ((old-key (car keypair))
             (new-key (cdr keypair)))
-        (global-set-key (kbd old-key) nil)
-        (define-key key-translation-map (kbd old-key) (kbd new-key)))))
-
-  ;; mappings for osx-alt
-  (overwrite-keys '(("s-5" . "[")
-                    ("s-6" . "]")
-                    ("s-7" . "|")
-                    ("s-S-7" . "\\")
-                    ("s-8" . "{")
-                    ("s-9" . "}")
-                    ("s-l" . "@")
-                    ("s-/" . "\\")
-                    ("s-n" . "~")))
+            (define-key key-translation-map (kbd old-key) (kbd new-key)))))
 
   (global-set-key (kbd "<s-up>") 'windmove-up)
   (global-set-key (kbd "<s-left>") 'windmove-left)
@@ -355,10 +321,18 @@ maximizes window without using useless osx fullscreen mode
                       ("9" . "9")
                       (")" . "{")
                       ("ß" . "?")
-                      ("?" . "ß"))))
+                      ("?" . "ß")
+                      ("s-5" . "[")
+                      ("s-6" . "]")
+                      ("s-7" . "|")
+                      ("s-S-7" . "\\")
+                      ("s-8" . "{")
+                      ("s-9" . "}")
+                      ("s-l" . "@")
+                      ("s-/" . "\\")
+                      ("s-n" . "~"))))
 
   (global-set-key (kbd "C-^") 'toggle-frame-maximized)
-
 
 #+END_SRC
 
@@ -408,11 +382,10 @@ based on orgmode, pandoc, revealjs
   (shell-command "Mv reveal.js-master reveal.js"))
 (use-package ox-pandoc
   :ensure t)
-(require 'ox-pandoc)
-(require 'org)
+;;(require 'ox-pandoc)
+;;(require 'org)
 #+END_SRC
 *** org languages
-
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (org-babel-do-load-languages
@@ -431,10 +404,8 @@ based on orgmode, pandoc, revealjs
      (perl . t)
      (python . t)
      ;; (gnuplot . t)
-     (sh . t)))
+     (shell . t)))
 #+END_SRC
-
-
 
 *** 1984
 I want to track what I'm doing and when.
@@ -443,7 +414,6 @@ This adds an entry in a csv file for every saved file
 (defun make-1984-entry ()
   (interactive)
   (let* (
-;; (description (read-string "What are you doing(no commata):"))
        (current-date (calendar-current-date))
        (current-year (nth 2 current-date))
        (current-month (car current-date))
@@ -451,7 +421,6 @@ This adds an entry in a csv file for every saved file
        (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month current-day)))
   (make-directory output-directory t)
   (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
-;;                         description
                          (current-time-string)
                          buffer-file-name
                          output-directory
@@ -657,12 +626,4 @@ This adds an entry in a csv file for every saved file
            (goto-char (point-min))
            (next-import)
                (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
-   #+END_SRC
-
-
-
-
-
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-
    #+END_SRC

@@ -1,3 +1,27 @@
+(defun tangle-init ()
+  "If the current buffer is 'init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+  (when (equal (buffer-file-name)
+               (expand-file-name (concat user-emacs-directory "init.org")))
+    ;; Avoid running hooks when tangling.
+    (let ((prog-mode-hook nil))
+      (org-babel-tangle)
+      (byte-compile-file (concat user-emacs-directory "init.el")))))
+(add-hook 'after-save-hook 'tangle-init)
+
+(require 'package)
+(add-to-list
+   'package-archives
+   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   t)
+
+(package-initialize)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)
@@ -6,10 +30,18 @@
 
 (tool-bar-mode -1)
 
+(scroll-bar-mode 0)
+
+(use-package diminish
+:ensure t)
+(use-package bind-key
+:ensure t)
+
 (when (memq window-system '(mac ns))
   (setq mac-option-modifier 'super
         mac-command-modifier 'meta
-        ns-right-command-modifier 'alt))
+        ns-right-command-modifier 'alt
+        ns-transparent-titlebar t))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -33,30 +65,27 @@
                   (get-char-property (point) 'face))))
     (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
-(defun tangle-init ()
-  "If the current buffer is 'init.org' the code-blocks are
-tangled, and the tangled file is compiled."
-  (when (equal (buffer-file-name)
-               (expand-file-name (concat user-emacs-directory "init.org")))
-    ;; Avoid running hooks when tangling.
-    (let ((prog-mode-hook nil))
-      (org-babel-tangle)
-      (byte-compile-file (concat user-emacs-directory "init.el")))))
-(add-hook 'after-save-hook 'tangle-init)
-
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
-
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
-
 (setq org-src-fontify-natively t)
+     (use-package auctex
+       :ensure t
+       :defer t
+       :config(progn
+                (setq ispell-program-name "/usr/local/bin/aspell")
+                (ispell-change-dictionary "de" t)
+                (flyspell-mode 1)
+                (setq TeX-PDF-mode t)
+                (setq TeX-auto-save t)
+                (setq TeX-parse-self t)))
+(require 'ox-latex)
+(unless (boundp 'org-latex-classes)
+  (setq org-latex-classes nil))
+(add-to-list 'org-latex-classes
+             '("myarticle" "\\documentclass[11pt]{myarticle}"
+  ("\\section{%s}" . "\\section*{%s}")
+  ("\\subsection{%s}" . "\\subsection*{%s}")
+  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+  ("\\paragraph{%s}" . "\\paragraph*{%s}")
+  ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 (add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
@@ -92,6 +121,9 @@ tangled, and the tangled file is compiled."
   :ensure t
   :config (yas-global-mode 1))
 
+;;(load "~/.emacs.d/org-show/org-show")
+;;(require 'org-show)
+
 (use-package ace-jump-mode
   :ensure t
   :bind (("C-ü" . ace-jump-mode)
@@ -122,7 +154,20 @@ tangled, and the tangled file is compiled."
   :ensure t
   :config (global-set-key (kbd "M-x") 'smex))
 
+(use-package hippie-exp
+  :ensure t
+  :defer t
+  :bind (("M-ä" . hippie-expand)))
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(use-package magit-gitflow
+  :ensure t)
+
+(use-package magit
+  :ensure t
+  :config
+  (add-hook 'magit-mode-hook 'turn-on-magit-gitflow))
 
 (setq backup-directory-alist `(("." . "~/.saves"))
       backup-by-copying t)
@@ -135,6 +180,143 @@ tangled, and the tangled file is compiled."
   :ensure t
   :config
     (which-key-mode))
+
+(defun overwrite-keys (keypairs)
+  (dolist (keypair keypairs)
+    (let ((old-key (car keypair))
+          (new-key (cdr keypair)))
+          (define-key key-translation-map (kbd old-key) (kbd new-key)))))
+
+(global-set-key (kbd "<s-up>") 'windmove-up)
+(global-set-key (kbd "<s-left>") 'windmove-left)
+(global-set-key (kbd "<s-down>") 'windmove-down)
+(global-set-key (kbd "<s-right>") 'windmove-right)
+
+(overwrite-keys '(("ö" . ";")
+                  ("ä" . ":")
+                  (";" . "Ö")
+                  (":" . "Ä")
+                  ("Ö" . "ö")
+                  ("Ä" . "ä")
+                  ("#" . "'")
+                  ("'" . "#")))
+
+(use-package key-chord
+  :ensure t
+  :config
+  (key-chord-mode t)
+  (key-chord-define-global "ff" 'find-file)
+  (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
+  (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
+  (key-chord-define-global "66" (lambda () (interactive) (insert "&")))
+  (key-chord-define-global "77" (lambda () (interactive) (insert "]")))
+  (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
+  (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+
+(when (memq window-system '(mac ns))
+  (overwrite-keys '(("§" . "&")
+                    ("6" . "6")
+                    ("&" . "/")
+                    ("/" . "[")
+                    ("9" . "9")
+                    (")" . "{")
+                    ("ß" . "?")
+                    ("?" . "ß")
+                    ("s-5" . "[")
+                    ("s-6" . "]")
+                    ("s-7" . "|")
+                    ("s-S-7" . "\\")
+                    ("s-8" . "{")
+                    ("s-9" . "}")
+                    ("s-l" . "@")
+                    ("s-/" . "\\")
+                    ("s-n" . "~"))))
+
+(global-set-key (kbd "C-^") 'toggle-frame-maximized)
+
+(use-package flycheck
+  :ensure t
+  :config
+  (progn
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-mode 'javascript-eslint 'js2-mode)
+    (flycheck-add-mode 'typescript-tslint 'typescript-mode)
+    (setq-default flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(javascript-jshint))
+
+                  flycheck-disabled-checkers
+                  (append flycheck-disabled-checkers
+                          '(json-jsonlist))
+
+                  ;; flycheck-disabled-checkers
+                  ;; (append flycheck-disabled-checkers
+                  ;;         '(typescript-tide))
+
+                  flycheck-temp-prefix ".flycheck")
+    (global-flycheck-mode 1)))
+
+(use-package yasnippet
+:ensure t
+:config
+(yas-global-mode 1))
+
+(defun init-presentation ()
+  (interactive)
+  (shell-command "wget https://github.com/hakimel/reveal.js/archive/master.tar.gz")
+  (shell-command "tar -xzvf master.tar.gz")
+  (shell-command "Mv reveal.js-master reveal.js"))
+(use-package ox-pandoc
+  :ensure t)
+;;(require 'ox-pandoc)
+;;(require 'org)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (awk . t)
+   (calc .t)
+   (C . t)
+   (emacs-lisp . t)
+   (haskell . t)
+   (gnuplot . t)
+   (latex . t)
+   ;;(ledger . t)
+   (js . t)
+   (haskell . t)
+   (perl . t)
+   (python . t)
+   ;; (gnuplot . t)
+   (shell . t)))
+
+(defun make-1984-entry ()
+  (interactive)
+  (let* (
+       (current-date (calendar-current-date))
+       (current-year (nth 2 current-date))
+       (current-month (car current-date))
+       (current-day (nth 1 current-date))
+       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month current-day)))
+  (make-directory output-directory t)
+  (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
+                         (current-time-string)
+                         buffer-file-name
+                         output-directory
+                         current-day))))
+
+(add-hook 'after-save-hook 'make-1984-entry)
+
+;; (use-package haskell-mode
+;;   :ensure t
+;;   :mode "\\.hs$"
+;;   :config
+;;     (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
+;;     (add-hook 'haskell-mode-hook
+;;               (lambda ()
+;;                 (push '("<=" . ?≤) prettify-symbols-alist)
+;;                 (push '("->" . ?→) prettify-symbols-alist)
+;;                 (push '(">=" . ?≥) prettify-symbols-alist)
+;;                 (push '("!=" . ?≠) prettify-symbols-alist))))
 
 (defconst lisp--prettify-symbols-alist
   '(("lambda"  . ?λ)))
@@ -304,5 +486,3 @@ tangled, and the tangled file is compiled."
            (goto-char (point-min))
            (next-import)
                (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
-
-

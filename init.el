@@ -32,6 +32,11 @@ tangled, and the tangled file is compiled."
 
 (scroll-bar-mode 0)
 
+(use-package whole-line-or-region
+  :ensure t
+  :config
+  (whole-line-or-region-mode t))
+
 (use-package diminish
 :ensure t)
 (use-package bind-key

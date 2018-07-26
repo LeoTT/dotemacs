@@ -80,6 +80,15 @@ scrollbars take too many pixels
    #+END_SRC
 
 ** basic configuration
+*** whole-line-or-region
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package whole-line-or-region
+    :ensure t
+    :config
+    (whole-line-or-region-mode t))
+#+END_SRC
+
 *** diminish
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package diminish

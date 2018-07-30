@@ -89,6 +89,14 @@ scrollbars take too many pixels
     (whole-line-or-region-mode t))
 #+END_SRC
 
+*** markdown-mode
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package markdown-mode
+    :ensure t
+    :mode "\\.md$")
+#+END_SRC
+
 *** diminish
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package diminish

@@ -32,6 +32,9 @@ tangled, and the tangled file is compiled."
 
 (scroll-bar-mode 0)
 
+(use-package imenu-list
+  :ensure t)
+
 (use-package whole-line-or-region
   :ensure t
   :config
@@ -429,6 +432,7 @@ tangled, and the tangled file is compiled."
   :mode "\\.ts$"
   :config
   (setq typescript-indent-level 2)
+  (add-hook 'typescript-mode-hook 'imenu-list-minor-mode)
   (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
   (add-hook 'typescript-mode-hook
             (lambda ()

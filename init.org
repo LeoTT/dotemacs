@@ -80,6 +80,13 @@ scrollbars take too many pixels
    #+END_SRC
 
 ** basic configuration
+*** imenu-list
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package imenu-list
+    :ensure t)
+#+END_SRC
+
 *** whole-line-or-region
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -605,6 +612,7 @@ This adds an entry in a csv file for every saved file
     :mode "\\.ts$"
     :config
     (setq typescript-indent-level 2)
+    (add-hook 'typescript-mode-hook 'imenu-list-minor-mode)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
     (add-hook 'typescript-mode-hook
               (lambda ()

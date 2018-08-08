@@ -1,0 +1,11 @@
+# key: cmp
+# name: docker-compose
+# --
+$1:
+  image: $2
+  ports:
+    - '$3:$4
+  environment:
+
+  volumes:
+    - $5

@@ -40,6 +40,10 @@ tangled, and the tangled file is compiled."
   :config
   (whole-line-or-region-mode t))
 
+(use-package markdown-mode
+  :ensure t
+  :mode "\\.md$")
+
 (use-package diminish
 :ensure t)
 (use-package bind-key

@@ -469,3 +469,28 @@ tangled, and the tangled file is compiled."
       (goto-char (point-min))
       (next-import)
           (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
+
+(use-package geiser
+  :ensure t
+  :config (setq geiser-scheme-implementation 'chicken)
+  :bind ("C-c C-h" . geiser-doc-symbol-at-point))
+
+(use-package scheme-complete
+  :ensure t)
+
+(use-package hy-mode
+  :ensure t
+  :mode ("\\.hy\\'"))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(hy-mode yasnippet yascroll whole-line-or-region which-key web-mode use-package tide smex scheme-complete rainbow-delimiters ox-pandoc nov markdown-mode magit-gitflow key-chord indium indent-guide imenu-list ido-vertical-mode helm-ag haskell-mode geiser exec-path-from-shell emmet-mode diminish dim company-jedi auctex ace-window ace-jump-mode)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

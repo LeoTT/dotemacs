@@ -463,6 +463,14 @@ This adds an entry in a csv file for every saved file
 (add-hook 'after-save-hook 'make-1984-entry)
 #+END_SRC
 
+*** open init.org
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (defun open-init-org ()
+      (interactive)
+    (find-file-existing "~/.emacs.d/init.org"))
+
+#+END_SRC
+
 ** programming
 *** haskell
 
@@ -649,4 +657,20 @@ This adds an entry in a csv file for every saved file
         (next-import)
             (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
 
+#+END_SRC
+*** scheme
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package geiser
+    :ensure t
+    :config (setq geiser-scheme-implementation 'chicken)
+    :bind ("C-c C-h" . geiser-doc-symbol-at-point))
+
+  (use-package scheme-complete
+    :ensure t)
+#+END_SRC
+*** hy
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package hy-mode
+    :ensure t
+    :mode ("\\.hy\\'"))
 #+END_SRC

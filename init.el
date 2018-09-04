@@ -325,6 +325,10 @@ tangled, and the tangled file is compiled."
 
 (add-hook 'after-save-hook 'make-1984-entry)
 
+(defun open-init-org ()
+    (interactive)
+  (find-file-existing "~/.emacs.d/init.org"))
+
 ;; (use-package haskell-mode
 ;;   :ensure t
 ;;   :mode "\\.hs$"

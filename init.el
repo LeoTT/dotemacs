@@ -353,11 +353,12 @@ tangled, and the tangled file is compiled."
      (use-package rainbow-delimiters
        :ensure t
        :init
-         (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
+       (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+       (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'"  "\\.css\\'" "\\.tsx\\'" "\\.jsx\\'")
+  :mode ("\\.html\\'"  "\\.css\\'")
   :interpreter "web"
   :config
   (setq web-mode-enable-auto-quoting nil
@@ -437,7 +438,7 @@ tangled, and the tangled file is compiled."
 
 (use-package typescript-mode
   :ensure t
-  :mode "\\.ts$"
+  :mode ("\\.ts\\' \\.jsx\\' \\.tsx\\'")
   :config
   (setq typescript-indent-level 2)
   (add-hook 'typescript-mode-hook 'imenu-list-minor-mode)

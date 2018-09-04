@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: npm run
+# key: nr
+# --
+npm run $1

@@ -671,15 +671,18 @@ This adds an entry in a csv file for every saved file
 *** hy
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (defvar hy-prettify-symbols-alist
-      '(("fn" . ?ƒ)
-        ("->" . ?→)))
-    (use-package hy-mode
-      :ensure t
-      :mode ("\\.hy\\'")
-      :config (add-hook hy-mode-hook
-                (lambda ()
-                  (setq-local prettify-symbols-alist hy-prettify-symbols-alist)
-                  )))
+    '(("fn" . ?ƒ)
+      ("->" . ?→)))
+
+  (use-package hy-mode
+    :ensure t
+    :mode ("\\.hy\\'")
+    :config
+    (add-hook 'hy-mode-hook 'prettify-symbols-mode)
+    (add-hook 'hy-mode-hook
+              (lambda ()
+                (setq-local prettify-symbols-alist hy-prettify-symbols-alist)
+                )))
 #+END_SRC
 *** clojure
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

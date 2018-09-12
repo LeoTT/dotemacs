@@ -566,7 +566,7 @@ This adds an entry in a csv file for every saved file
       ("&&" . ?∧)
       ("||" . ?∨)
       (">=" . ?≥)
-      ("=>" . ?⟹)
+      ("=>" . ?⇒)
       ("!==" . ?≠)))
 #+END_SRC
 

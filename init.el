@@ -224,7 +224,6 @@ tangled, and the tangled file is compiled."
   :ensure t
   :config
   (key-chord-mode t)
-  (key-chord-define-global "ff" 'find-file)
   (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
   (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
   (key-chord-define-global "66" (lambda () (interactive) (insert "&")))

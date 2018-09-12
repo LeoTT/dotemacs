@@ -670,7 +670,23 @@ This adds an entry in a csv file for every saved file
 #+END_SRC
 *** hy
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package hy-mode
+  (defvar hy-prettify-symbols-alist
+      '(("fn" . ?ƒ)
+        ("->" . ?→)))
+    (use-package hy-mode
+      :ensure t
+      :mode ("\\.hy\\'")
+      :config (add-hook hy-mode-hook
+                (lambda ()
+                  (setq-local prettify-symbols-alist hy-prettify-symbols-alist)
+                  )))
+#+END_SRC
+*** clojure
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package cider
+    :ensure t)
+
+  (use-package clojure-mode
     :ensure t
-    :mode ("\\.hy\\'"))
+    :mode ("\\.clj\\'"))
 #+END_SRC

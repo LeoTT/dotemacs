@@ -495,17 +495,15 @@ This adds an entry in a csv file for every saved file
            (">>>" . ?⋙)))
 
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     ;; (use-package haskell-mode
-     ;;   :ensure t
-     ;;   :mode "\\.hs$"
-     ;;   :config
-     ;;     (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
-     ;;     (add-hook 'haskell-mode-hook
-     ;;               (lambda ()
-     ;;                 (push '("<=" . ?≤) prettify-symbols-alist)
-     ;;                 (push '("->" . ?→) prettify-symbols-alist)
-     ;;                 (push '(">=" . ?≥) prettify-symbols-alist)
-     ;;                 (push '("!=" . ?≠) prettify-symbols-alist))))
+     (use-package haskell-mode
+       :ensure t
+       :mode "\\.hs$"
+       :config
+         (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
+         (add-hook 'haskell-mode-hook
+                 (lambda ()
+                   (setq-local prettify-symbols-alist haskell-prettify-symbols-alist)
+                   )))
    #+END_SRC
 *** elisp
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el

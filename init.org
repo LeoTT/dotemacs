@@ -469,6 +469,12 @@ This adds an entry in a csv file for every saved file
     (find-file-existing "~/.emacs.d/init.org"))
 
 #+END_SRC
+***
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(defun quick-shell ()
+    (interactive)
+  (shell (concat "**" default-directory "**")))
+#+END_SRC
 
 ** programming
 *** haskell
@@ -626,7 +632,6 @@ This adds an entry in a csv file for every saved file
     :mode ("\\.ts\\' \\.jsx\\' \\.tsx\\'")
     :config
     (setq typescript-indent-level 2)
-    (add-hook 'typescript-mode-hook 'imenu-list-minor-mode)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
     (add-hook 'typescript-mode-hook
               (lambda ()

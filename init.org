@@ -666,6 +666,14 @@ This adds an entry in a csv file for every saved file
   (use-package scheme-complete
     :ensure t)
 #+END_SRC
+*** php
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package php-mode
+    :ensure t
+    :mode ("\\.php\\'"))
+#+END_SRC
+
 *** hy
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (defvar hy-prettify-symbols-alist

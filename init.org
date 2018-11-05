@@ -55,6 +55,11 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'tron t)
 #+END_SRC
+** font
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(set-face-attribute 'default nil
+                    :family "Fira Code")
+#+END_SRC
 
 ** get rid of stuff
 

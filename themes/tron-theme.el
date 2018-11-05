@@ -28,7 +28,7 @@
       (tron-bright         "#dfedff")
       (tron-light-gray     "#666666")
       (tron-lightest-gray  "#999999")
-      (tron-comment-slate  "#CCCCCC")
+      (tron-comment-slate  "#AAAAAA")
       (tron-orange         "#F38630")
       (tron-light-slate    "#465459")
       (tron-dark-slate     "#161A1F")

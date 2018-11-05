@@ -59,7 +59,7 @@
    `(rainbow-delimiters-depth-2-face ((t (:foreground ,yellow))))
    `(rainbow-delimiters-depth-3-face ((t (:foreground ,bright-red))))
    `(rainbow-delimiters-depth-4-face ((t (:foreground ,purple))))
-
+   `(hl-line ((t (:background ,tron-orange))))
    `(js2-object-property  ((t (:foreground ,tron-strong-green))))
    `(js2-function-call  ((t (:foreground ,bright-green))))
    `(js2-external-variable  ((t (:foreground ,bright-red))))

@@ -103,6 +103,9 @@
    `(font-lock-variable-name-face ((t (:foreground ,tron-lighter-orange))))
    `(font-lock-type-face ((t (:foreground ,yellow))))
    `(font-lock-warning-face ((t (:foreground ,red :bold t))))
+   ;; ediff
+   `(ediff-even-diff-A ((t (:background ,tron-light-gray))))
+   `(ediff-even-diff-B ((t (:background ,tron-light-gray))))
 
    ;; ---------------- Package Specific Stuff -----------
    ;; Powerline

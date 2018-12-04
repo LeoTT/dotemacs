@@ -56,6 +56,11 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
 (load-theme 'tron t)
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(custom-set-faces
+'(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
+#+END_SRC
+
 ** get rid of stuff
 
    I want my editor to be minimalistic. This section gets rid of toolbars, scrollbars, noise, etc.

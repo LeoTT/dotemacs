@@ -149,7 +149,7 @@ scrollbars take too many pixels
 *** org-mode/latex
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-
+(setq org-src-preserve-indentation t)
    (defun org-mode-startup ()
      (org-content 3))
 

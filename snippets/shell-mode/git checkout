@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: git checkout
+# key: gco
+# --
+git checkout $0

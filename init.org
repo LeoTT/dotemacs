@@ -1,3 +1,4 @@
+
 * about
 
 - initial setup:
@@ -95,10 +96,10 @@ scrollbars take too many pixels
 *** whole-line-or-region
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-  (use-package whole-line-or-region
-    :ensure t
-    :config
-    (whole-line-or-region-mode t))
+(use-package whole-line-or-region
+  :ensure t
+  :config
+  (whole-line-or-region-global-mode t))
 #+END_SRC
 
 *** markdown-mode
@@ -456,7 +457,7 @@ This adds an entry in a csv file for every saved file
        (current-year (nth 2 current-date))
        (current-month (car current-date))
        (current-day (nth 1 current-date))
-       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month current-day)))
+       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month)))
   (make-directory output-directory t)
   (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
                          (current-time-string)
@@ -484,88 +485,95 @@ This adds an entry in a csv file for every saved file
 ** programming
 *** haskell
 
-(defvar haskell-prettify-symbols-alist
-         '(("::"     . ?∷)
-           ("forall" . ?∀)
-           ("exists" . ?∃)
-           ("->"     . ?→)
-           ("<-"     . ?←)
-           ("=>"     . ?⇒)
-           ("~>"     . ?⇝)
-           ("<~"     . ?⇜)
-           ("<>"     . ?⨂)
-           ("msum"   . ?⨁)
-           ("\\"     . ?λ)
-           ("not"    . ?¬)
-           ("&&"     . ?∧)
-           ("||"     . ?∨)
-           ("/="     . ?≠)
-           ("<="     . ?≤)
-           (">="     . ?≥)
-           ("<<<"    . ?⋘)
-           (">>>" . ?⋙)))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (defvar haskell-prettify-symbols-alist
+    '(("::"     . ?∷)
+      ("forall" . ?∀)
+      ("exists" . ?∃)
+      ("->"     . ?→)
+      ("<-"     . ?←)
+      ("=>"     . ?⇒)
+      ("~>"     . ?⇝)
+      ("<~"     . ?⇜)
+      ("<>"     . ?⨂)
+      ("msum"   . ?⨁)
+      ("\\"     . ?λ)
+      ("not"    . ?¬)
+      ("&&"     . ?∧)
+      ("||"     . ?∨)
+      ("/="     . ?≠)
+      ("<="     . ?≤)
+      (">="     . ?≥)
+      ("<<<"    . ?⋘)
+      (">>>"    . ?⋙)))
 
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (use-package haskell-mode
-       :ensure t
-       :mode "\\.hs$"
-       :config
-         (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
-         (add-hook 'haskell-mode-hook
-                 (lambda ()
-                   (setq-local prettify-symbols-alist haskell-prettify-symbols-alist)
-                   )))
-   #+END_SRC
+  (use-package haskell-mode
+    :ensure t
+    :mode "\\.hs$"
+    :config
+    (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
+    (add-hook 'haskell-mode-hook
+              (lambda ()
+                (setq-local prettify-symbols-alist haskell-prettify-symbols-alist)
+                )))
+
+#+END_SRC
+
 *** elisp
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (defconst lisp--prettify-symbols-alist
-       '(("lambda"  . ?λ)))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (defconst lisp--prettify-symbols-alist
+    '(("lambda"  . ?λ)))
 
-          (add-hook 'emacs-lisp-mode-hook
-                    '(lambda () (progn
-                                  (prettify-symbols-mode t)
-                                  (show-paren-mode t)
-                                  (electric-pair-mode t))))
+       (add-hook 'emacs-lisp-mode-hook
+                 '(lambda () (progn
+                               (prettify-symbols-mode t)
+                               (show-paren-mode t)
+                               (electric-pair-mode t))))
 
-          (use-package rainbow-delimiters
-            :ensure t
-            :init
-            (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-            (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
-   #+END_SRC
+       (use-package rainbow-delimiters
+         :ensure t
+         :init
+         (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+         (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC
+
 *** web(html, css)
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (use-package web-mode
-       :ensure t
-       :mode ("\\.html\\'"  "\\.css\\'")
-       :interpreter "web"
-       :config
-       (setq web-mode-enable-auto-quoting nil
-             web-mode-enable-current-element-highlight t
-             web-mode-markup-indent-offset 2))
 
-     (use-package emmet-mode
-       :ensure t
-       :commands (emmet-mode)
-       :init
-         (add-hook 'web-mode-hook #'emmet-mode)
-       :config (when (and (stringp buffer-file-name)
-                      (string-match "\\.css\\'" buffer-file-name))
-                 (setq emmet-use-css-transform t)))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package web-mode
+    :ensure t
+    :mode ("\\.html\\'"  "\\.css\\'")
+    :interpreter "web"
+    :config
+    (setq web-mode-enable-auto-quoting nil
+          web-mode-enable-current-element-highlight t
+          web-mode-markup-indent-offset 2))
+
+  (use-package emmet-mode
+    :ensure t
+    :commands (emmet-mode)
+    :init
+      (add-hook 'web-mode-hook #'emmet-mode)
+    :config (when (and (stringp buffer-file-name)
+                   (string-match "\\.css\\'" buffer-file-name))
+              (setq emmet-use-css-transform t)))
 
 
-   #+END_SRC
+#+END_SRC
+
 *** python
-   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-     (use-package company-jedi
-       :ensure t
-       :config
-       (defun my/python-mode-hook ()
-         (add-to-list 'company-backends 'company-jedi))
 
-       (add-hook 'python-mode-hook 'my/python-mode-hook))
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+  (use-package company-jedi
+    :ensure t
+    :config
+    (defun my/python-mode-hook ()
+      (add-to-list 'company-backends 'company-jedi))
 
-   #+END_SRC
+    (add-hook 'python-mode-hook 'my/python-mode-hook))
+
+#+END_SRC
+
 *** javascript & typescript
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -667,6 +675,7 @@ This adds an entry in a csv file for every saved file
 
 #+END_SRC
 *** scheme
+
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package geiser
     :ensure t
@@ -676,7 +685,9 @@ This adds an entry in a csv file for every saved file
   (use-package scheme-complete
     :ensure t)
 #+END_SRC
+
 *** hy
+
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (defvar hy-prettify-symbols-alist
     '(("fn" . ?ƒ)
@@ -693,6 +704,7 @@ This adds an entry in a csv file for every saved file
                 )))
 #+END_SRC
 *** clojure
+
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package cider
     :ensure t)
@@ -702,6 +714,7 @@ This adds an entry in a csv file for every saved file
     :mode ("\\.clj\\'"))
 #+END_SRC
 *** prolog
+
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (load "./prolog.el")
   (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
@@ -711,11 +724,40 @@ This adds an entry in a csv file for every saved file
                                           ; see `prolog-system' below for possible values
   (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
                                   ("\\.m$" . mercury-mode))
-                                auto-mode-alist))
+                                 auto-mode-alist))
   (eval-after-load 'prolog
-    '(define-key prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim))
-  (use-package ediprolog
-    :ensure t
-    :mode "\\.pl\\'")
+                    '(define-key prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim))
+#+END_SRC
+*** csharp
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+    (use-package omnisharp
+      :ensure t
+      :config
+      (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+      (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
+
+  (defun my-csharp-mode-setup ()
+    (omnisharp-mode)
+    (company-mode)
+    (flycheck-mode)
+
+    (setq indent-tabs-mode nil)
+    (setq c-syntactic-indentation t)
+    ;; (c-set-style "ellemtel")
+    ;; (setq c-basic-offset 4)
+    ;; (setq truncate-lines t)
+    ;; (setq tab-width 4)
+
+    ;csharp-mode README.md recommends this too
+    ;(electric-pair-mode 1)       ;; Emacs 24
+    ;(electric-pair-local-mode 1) ;; Emacs 25
+
+    (local-set-key (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
+    (local-set-key (kbd "C-c C-c") 'recompile))
+
+  (eval-after-load
+   'company
+   '(add-to-list 'company-backends 'company-omnisharp))
 
 #+END_SRC

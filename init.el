@@ -38,7 +38,7 @@ tangled, and the tangled file is compiled."
 (use-package whole-line-or-region
   :ensure t
   :config
-  (whole-line-or-region-mode t))
+  (whole-line-or-region-global-mode t))
 
 (use-package markdown-mode
   :ensure t
@@ -314,7 +314,7 @@ tangled, and the tangled file is compiled."
        (current-year (nth 2 current-date))
        (current-month (car current-date))
        (current-day (nth 1 current-date))
-       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month current-day)))
+       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month)))
   (make-directory output-directory t)
   (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
                          (current-time-string)
@@ -328,17 +328,40 @@ tangled, and the tangled file is compiled."
     (interactive)
   (find-file-existing "~/.emacs.d/init.org"))
 
-;; (use-package haskell-mode
-;;   :ensure t
-;;   :mode "\\.hs$"
-;;   :config
-;;     (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
-;;     (add-hook 'haskell-mode-hook
-;;               (lambda ()
-;;                 (push '("<=" . ?≤) prettify-symbols-alist)
-;;                 (push '("->" . ?→) prettify-symbols-alist)
-;;                 (push '(">=" . ?≥) prettify-symbols-alist)
-;;                 (push '("!=" . ?≠) prettify-symbols-alist))))
+(defun quick-shell ()
+    (interactive)
+  (shell (concat "**" default-directory "**")))
+
+(defvar haskell-prettify-symbols-alist
+  '(("::"     . ?∷)
+    ("forall" . ?∀)
+    ("exists" . ?∃)
+    ("->"     . ?→)
+    ("<-"     . ?←)
+    ("=>"     . ?⇒)
+    ("~>"     . ?⇝)
+    ("<~"     . ?⇜)
+    ("<>"     . ?⨂)
+    ("msum"   . ?⨁)
+    ("\\"     . ?λ)
+    ("not"    . ?¬)
+    ("&&"     . ?∧)
+    ("||"     . ?∨)
+    ("/="     . ?≠)
+    ("<="     . ?≤)
+    (">="     . ?≥)
+    ("<<<"    . ?⋘)
+    (">>>"    . ?⋙)))
+
+(use-package haskell-mode
+  :ensure t
+  :mode "\\.hs$"
+  :config
+  (add-hook 'haskell-mode-hook 'prettify-symbols-mode)
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (setq-local prettify-symbols-alist haskell-prettify-symbols-alist)
+              )))
 
 (defconst lisp--prettify-symbols-alist
   '(("lambda"  . ?λ)))
@@ -386,7 +409,7 @@ tangled, and the tangled file is compiled."
     ("&&" . ?∧)
     ("||" . ?∨)
     (">=" . ?≥)
-    ("=>" . ?⟹)
+    ("=>" . ?⇒)
     ("!==" . ?≠)))
 
 (use-package js2-mode
@@ -440,7 +463,6 @@ tangled, and the tangled file is compiled."
   :mode ("\\.ts\\' \\.jsx\\' \\.tsx\\'")
   :config
   (setq typescript-indent-level 2)
-  (add-hook 'typescript-mode-hook 'imenu-list-minor-mode)
   (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
   (add-hook 'typescript-mode-hook
             (lambda ()
@@ -477,19 +499,65 @@ tangled, and the tangled file is compiled."
 (use-package scheme-complete
   :ensure t)
 
+(defvar hy-prettify-symbols-alist
+  '(("fn" . ?ƒ)
+    ("->" . ?→)))
+
 (use-package hy-mode
   :ensure t
-  :mode ("\\.hy\\'"))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(hy-mode yasnippet yascroll whole-line-or-region which-key web-mode use-package tide smex scheme-complete rainbow-delimiters ox-pandoc nov markdown-mode magit-gitflow key-chord indium indent-guide imenu-list ido-vertical-mode helm-ag haskell-mode geiser exec-path-from-shell emmet-mode diminish dim company-jedi auctex ace-window ace-jump-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+  :mode ("\\.hy\\'")
+  :config
+  (add-hook 'hy-mode-hook 'prettify-symbols-mode)
+  (add-hook 'hy-mode-hook
+            (lambda ()
+              (setq-local prettify-symbols-alist hy-prettify-symbols-alist)
+              )))
+
+(use-package cider
+  :ensure t)
+
+(use-package clojure-mode
+  :ensure t
+  :mode ("\\.clj\\'"))
+
+(load "./prolog.el")
+(autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
+(autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+(autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
+(setq prolog-system 'swi)  ; optional, the system you are using;
+                           ; see `prolog-system' below for possible values
+(setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
+                                ("\\.m$" . mercury-mode))
+                               auto-mode-alist))
+(eval-after-load 'prolog
+                  '(define-key prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim))
+
+(use-package omnisharp
+    :ensure t
+    :config
+    (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+    (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
+
+(defun my-csharp-mode-setup ()
+  (omnisharp-mode)
+  (company-mode)
+  (flycheck-mode)
+
+  (setq indent-tabs-mode nil)
+  (setq c-syntactic-indentation t)
+  ;; (c-set-style "ellemtel")
+  ;; (setq c-basic-offset 4)
+  ;; (setq truncate-lines t)
+  ;; (setq tab-width 4)
+  (setq evil-shift-width 4)
+
+  ;csharp-mode README.md recommends this too
+  ;(electric-pair-mode 1)       ;; Emacs 24
+  ;(electric-pair-local-mode 1) ;; Emacs 25
+
+  (local-set-key (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
+  (local-set-key (kbd "C-c C-c") 'recompile))
+
+(eval-after-load
+ 'company
+ '(add-to-list 'company-backends 'company-omnisharp))

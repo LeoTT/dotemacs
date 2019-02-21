@@ -345,10 +345,7 @@ maximizes window without using useless osx fullscreen mode
     :ensure t
     :config
     (key-chord-mode t)
-    (key-chord-define-global "55" (lambda () (interactive) (insert "/")))
     (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
-    (key-chord-define-global "66" (lambda () (interactive) (insert "&")))
-    (key-chord-define-global "77" (lambda () (interactive) (insert "]")))
     (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
     (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
 
@@ -760,4 +757,18 @@ This adds an entry in a csv file for every saved file
    'company
    '(add-to-list 'company-backends 'company-omnisharp))
 
+#+END_SRC
+
+*** lisp
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package paredit
+  :ensure t
+  :config
+  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+  ;; enable in the *scratch* buffer
+  (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+  (add-hook 'scheme-mode-hook #'paredit-mode)
+  (add-hook 'lisp-mode-hook #'paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 #+END_SRC

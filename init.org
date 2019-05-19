@@ -332,15 +332,6 @@ maximizes window without using useless osx fullscreen mode
   (global-set-key (kbd "<s-down>") 'windmove-down)
   (global-set-key (kbd "<s-right>") 'windmove-right)
 
-  (overwrite-keys '(("ö" . ";")
-                    ("ä" . ":")
-                    (";" . "Ö")
-                    (":" . "Ä")
-                    ("Ö" . "ö")
-                    ("Ä" . "ä")
-                    ("#" . "'")
-                    ("'" . "#")))
-
   (use-package key-chord
     :ensure t
     :config
@@ -354,8 +345,6 @@ maximizes window without using useless osx fullscreen mode
                       ("6" . "6")
                       ("&" . "/")
                       ("/" . "[")
-                      ("9" . "9")
-                      (")" . "{")
                       ("ß" . "?")
                       ("?" . "ß")
                       ("s-5" . "[")

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: npm run watch
+# key: nrw
+# --
+npm run watch

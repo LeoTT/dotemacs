@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: npm run build
+# key: nrb
+# --
+npm run build

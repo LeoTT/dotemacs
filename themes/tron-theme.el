@@ -106,7 +106,7 @@
    ;; ediff
    `(ediff-even-diff-A ((t (:background ,tron-light-gray))))
    `(ediff-even-diff-B ((t (:background ,tron-light-gray))))
-
+   `(ediff-even-diff-C ((t (:background ,tron-dark-slate))))
    ;; ---------------- Package Specific Stuff -----------
    ;; Powerline
    `(powerline-active1 ((t (:background ,tron-dirty-white :foreground ,tron-background))))))

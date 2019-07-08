@@ -375,7 +375,8 @@
     :config
     (setq web-mode-enable-auto-quoting nil
           web-mode-enable-current-element-highlight t
-          web-mode-markup-indent-offset 2))
+          web-mode-markup-indent-offset 2
+          css-indent-offset 2))
 
   (use-package emmet-mode
     :ensure t
@@ -385,6 +386,12 @@
     :config (when (and (stringp buffer-file-name)
                    (string-match "\\.css\\'" buffer-file-name))
               (setq emmet-use-css-transform t)))
+
+(use-package elpy
+  :ensure t
+  :defer t
+  :init
+  (advice-add 'python-mode :before 'elpy-enable))
 
   (use-package company-jedi
     :ensure t
@@ -450,7 +457,7 @@
 
   (use-package typescript-mode
     :ensure t
-    :mode ("\\.ts\\' \\.jsx\\' \\.tsx\\'")
+    :mode ("\\.ts\\'" "\\.ts\\'" "\\.jsx\\'" "\\.tsx\\'")
     :config
     (setq typescript-indent-level 2)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
@@ -483,7 +490,7 @@
 
   (use-package geiser
     :ensure t
-    :config (setq geiser-scheme-implementation 'chicken)
+    :config (setq geiser-scheme-implementation 'guile)
     :bind ("C-c C-h" . geiser-doc-symbol-at-point))
 
   (use-package scheme-complete

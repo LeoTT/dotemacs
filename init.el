@@ -97,6 +97,7 @@
            TeX-auto-save t
            TeX-parse-self t)
      (ispell-change-dictionary "de" t)
+     (add-hook 'LaTeX-mode-hook 'tex-fold-mode)
      (flyspell-mode 1))
 
    (require 'ox-latex)
@@ -248,7 +249,8 @@
   (progn
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-eslint 'js2-mode)
-    (flycheck-add-mode 'typescript-tslint 'typescript-mode)
+    (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+    ;; (flycheck-add-mode 'typescript-tslint 'typescript-mode)
     (setq-default flycheck-disabled-checkers
                   (append flycheck-disabled-checkers
                           '(javascript-jshint))
@@ -401,13 +403,16 @@
 
     (add-hook 'python-mode-hook 'my/python-mode-hook))
 
-  (defvar js-ts-prettify-symbols-alist
-    '(("<=" . ?≤)
-      ("&&" . ?∧)
-      ("||" . ?∨)
-      (">=" . ?≥)
-      ("=>" . ?⇒)
-      ("!==" . ?≠)))
+(use-package add-node-modules-path
+  :ensure t)
+
+(defvar js-ts-prettify-symbols-alist
+  '(("<=" . ?≤)
+    ("&&" . ?∧)
+    ("||" . ?∨)
+    (">=" . ?≥)
+    ("=>" . ?⇒)
+    ("!==" . ?≠)))
 
      (use-package js2-mode
        :ensure t
@@ -450,7 +455,7 @@
     :config
       (add-hook 'typescript-mode-hook #'setup-tide-mode)
       (add-hook 'js2-mode-hook #'setup-tide-mode)
-      (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
+      (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
       (setq tide-format-options '(
                               :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                               :placeOpenBraceOnNewLineForFunctions nil)))
@@ -461,6 +466,7 @@
     :config
     (setq typescript-indent-level 2)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
+    (add-hook 'typescript-mode-hook #'add-node-modules-path)
     (add-hook 'typescript-mode-hook
               (lambda ()
                 (setq-local prettify-symbols-alist js-ts-prettify-symbols-alist)

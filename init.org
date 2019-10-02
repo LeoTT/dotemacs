@@ -369,7 +369,8 @@ maximizes window without using useless osx fullscreen mode
   (progn
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-eslint 'js2-mode)
-    (flycheck-add-mode 'typescript-tslint 'typescript-mode)
+    (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+    ;; (flycheck-add-mode 'typescript-tslint 'typescript-mode)
     (setq-default flycheck-disabled-checkers
                   (append flycheck-disabled-checkers
                           '(javascript-jshint))
@@ -573,13 +574,16 @@ pip3 install jedi flake8 autopep8 black yapf
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 
-  (defvar js-ts-prettify-symbols-alist
-    '(("<=" . ?≤)
-      ("&&" . ?∧)
-      ("||" . ?∨)
-      (">=" . ?≥)
-      ("=>" . ?⇒)
-      ("!==" . ?≠)))
+(use-package add-node-modules-path
+  :ensure t)
+
+(defvar js-ts-prettify-symbols-alist
+  '(("<=" . ?≤)
+    ("&&" . ?∧)
+    ("||" . ?∨)
+    (">=" . ?≥)
+    ("=>" . ?⇒)
+    ("!==" . ?≠)))
 #+END_SRC
 
 *** javascript
@@ -613,7 +617,6 @@ pip3 install jedi flake8 autopep8 black yapf
 *** typescript
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-
   (defun setup-tide-mode()
     (interactive)
     (tide-setup)
@@ -630,7 +633,7 @@ pip3 install jedi flake8 autopep8 black yapf
     :config
       (add-hook 'typescript-mode-hook #'setup-tide-mode)
       (add-hook 'js2-mode-hook #'setup-tide-mode)
-      (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
+      (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
       (setq tide-format-options '(
                               :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                               :placeOpenBraceOnNewLineForFunctions nil)))
@@ -641,6 +644,7 @@ pip3 install jedi flake8 autopep8 black yapf
     :config
     (setq typescript-indent-level 2)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
+    (add-hook 'typescript-mode-hook #'add-node-modules-path)
     (add-hook 'typescript-mode-hook
               (lambda ()
                 (setq-local prettify-symbols-alist js-ts-prettify-symbols-alist)

@@ -104,6 +104,10 @@
    `(font-lock-type-face ((t (:foreground ,yellow))))
    `(font-lock-warning-face ((t (:foreground ,red :bold t))))
    ;; ediff
+   `(ediff-odd-diff-A ((t (:background ,tron-light-gray))))
+   `(ediff-odd-diff-B ((t (:background ,tron-light-gray))))
+   `(ediff-odd-diff-C ((t (:background ,tron-dark-slate))))
+
    `(ediff-even-diff-A ((t (:background ,tron-light-gray))))
    `(ediff-even-diff-B ((t (:background ,tron-light-gray))))
    `(ediff-even-diff-C ((t (:background ,tron-dark-slate))))

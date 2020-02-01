@@ -80,6 +80,15 @@
                     (get-char-property (point) 'face))))
       (if face (message "Face: %s" face) (message "No face at %d" pos))))
 
+(use-package org-ref
+  :ensure t)
+(require 'org-ref)
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
 (setq org-src-preserve-indentation t)
    (defun org-mode-startup ()
      (org-content 3))
@@ -221,8 +230,9 @@
     :config
     (key-chord-mode t)
     (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
-    (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
-    (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+    ;; (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
+    ;; (key-chord-define-global "99" (lambda () (interactive) (insert "}")))
+)
 
   (when (memq window-system '(mac ns))
     (overwrite-keys '(("§" . "&")
@@ -372,7 +382,7 @@
 
   (use-package web-mode
     :ensure t
-    :mode ("\\.html\\'"  "\\.css\\'")
+    :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'")
     :interpreter "web"
     :config
     (setq web-mode-enable-auto-quoting nil
@@ -456,6 +466,7 @@
       (add-hook 'typescript-mode-hook #'setup-tide-mode)
       (add-hook 'js2-mode-hook #'setup-tide-mode)
       (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
+      (flycheck-add-next-checker 'javascript-tide '(t . javascript-eslint) 'append)
       (setq tide-format-options '(
                               :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                               :placeOpenBraceOnNewLineForFunctions nil)))
@@ -566,6 +577,7 @@
 
 (use-package paredit
   :ensure t
+  :after (define-key paredit-mode-map (kbd "DEL") 'delete-backward-char)
   :config
   (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; enable in the *scratch* buffer
@@ -573,3 +585,30 @@
   (add-hook 'scheme-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+
+(use-package lsp-mode
+  :ensure t
+  :hook (reason-mode . lsp)
+  :commands lsp)
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package company-lsp
+  :ensure t
+  :after company lsp-mode
+  :init
+  (push 'company-lsp company-backends))
+
+(use-package reason-mode
+  :ensure t
+  :after lsp-mode
+  :mode ("\\.ml\\'" . reason-mode)
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "~/Downloads/rls-linux/reason-language-server")
+                    :major-modes '(reason-mode)
+                    :notification-handlers (ht ("client/registerCapability" 'ignore))
+                    :priority 1
+                    :server-id 'reason-ls)))

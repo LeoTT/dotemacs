@@ -155,6 +155,16 @@ scrollbars take too many pixels
 *** org-mode/latex
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+(use-package org-ref
+  :ensure t)
+(require 'org-ref)
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
 (setq org-src-preserve-indentation t)
    (defun org-mode-startup ()
      (org-content 3))
@@ -172,6 +182,7 @@ scrollbars take too many pixels
            TeX-auto-save t
            TeX-parse-self t)
      (ispell-change-dictionary "de" t)
+     (add-hook 'LaTeX-mode-hook 'tex-fold-mode)
      (flyspell-mode 1))
 
    (require 'ox-latex)
@@ -337,8 +348,9 @@ maximizes window without using useless osx fullscreen mode
     :config
     (key-chord-mode t)
     (key-chord-define-global "z7" (lambda () (interactive) (insert "/")))
-    (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
-    (key-chord-define-global "99" (lambda () (interactive) (insert "}"))))
+    ;; (key-chord-define-global "88" (lambda () (interactive) (insert ")")))
+    ;; (key-chord-define-global "99" (lambda () (interactive) (insert "}")))
+)
 
   (when (memq window-system '(mac ns))
     (overwrite-keys '(("§" . "&")
@@ -529,7 +541,7 @@ This adds an entry in a csv file for every saved file
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (use-package web-mode
     :ensure t
-    :mode ("\\.html\\'"  "\\.css\\'")
+    :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'")
     :interpreter "web"
     :config
     (setq web-mode-enable-auto-quoting nil
@@ -634,6 +646,7 @@ pip3 install jedi flake8 autopep8 black yapf
       (add-hook 'typescript-mode-hook #'setup-tide-mode)
       (add-hook 'js2-mode-hook #'setup-tide-mode)
       (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
+      (flycheck-add-next-checker 'javascript-tide '(t . javascript-eslint) 'append)
       (setq tide-format-options '(
                               :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                               :placeOpenBraceOnNewLineForFunctions nil)))
@@ -766,6 +779,7 @@ pip3 install jedi flake8 autopep8 black yapf
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package paredit
   :ensure t
+  :after (define-key paredit-mode-map (kbd "DEL") 'delete-backward-char)
   :config
   (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; enable in the *scratch* buffer
@@ -773,4 +787,34 @@ pip3 install jedi flake8 autopep8 black yapf
   (add-hook 'scheme-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+#+END_SRC
+*** ocaml/reason
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package lsp-mode
+  :ensure t
+  :hook (reason-mode . lsp)
+  :commands lsp)
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package company-lsp
+  :ensure t
+  :after company lsp-mode
+  :init
+  (push 'company-lsp company-backends))
+
+(use-package reason-mode
+  :ensure t
+  :after lsp-mode
+  :mode ("\\.ml\\'" . reason-mode)
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "~/Downloads/rls-linux/reason-language-server")
+                    :major-modes '(reason-mode)
+                    :notification-handlers (ht ("client/registerCapability" 'ignore))
+                    :priority 1
+                    :server-id 'reason-ls)))
+
 #+END_SRC

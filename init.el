@@ -380,25 +380,6 @@
          (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
          (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
-  (use-package web-mode
-    :ensure t
-    :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'")
-    :interpreter "web"
-    :config
-    (setq web-mode-enable-auto-quoting nil
-          web-mode-enable-current-element-highlight t
-          web-mode-markup-indent-offset 2
-          css-indent-offset 2))
-
-  (use-package emmet-mode
-    :ensure t
-    :commands (emmet-mode)
-    :init
-      (add-hook 'web-mode-hook #'emmet-mode)
-    :config (when (and (stringp buffer-file-name)
-                   (string-match "\\.css\\'" buffer-file-name))
-              (setq emmet-use-css-transform t)))
-
 (use-package elpy
   :ensure t
   :defer t
@@ -420,8 +401,13 @@
   '(("<=" . ?≤)
     ("&&" . ?∧)
     ("||" . ?∨)
+    ("public" . ?+)
+    ("private" . ?-)
+    ("async" . ?⌚)
+    ("await" . ?⌚)
     (">=" . ?≥)
     ("=>" . ?⇒)
+    ("return" . ?↳)
     ("!==" . ?≠)))
 
      (use-package js2-mode
@@ -449,6 +435,27 @@
      (use-package indium
        :ensure t)
 
+  (use-package web-mode
+    :ensure t
+    :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'" "\\.tsx\\'")
+    :interpreter "web"
+    :config
+    (setq web-mode-enable-auto-quoting nil
+          web-mode-enable-current-element-highlight t
+          web-mode-markup-indent-offset 2
+          css-indent-offset 2)
+(when (string= (file-name-extension buffer-file-name) "tsx")
+(setup-tide-mode)))
+
+  (use-package emmet-mode
+    :ensure t
+    :commands (emmet-mode)
+    :init
+      (add-hook 'web-mode-hook #'emmet-mode)
+    :config (when (and (stringp buffer-file-name)
+                   (string-match "\\.css\\'" buffer-file-name))
+              (setq emmet-use-css-transform t)))
+
   (defun setup-tide-mode()
     (interactive)
     (tide-setup)
@@ -473,7 +480,7 @@
 
   (use-package typescript-mode
     :ensure t
-    :mode ("\\.ts\\'" "\\.ts\\'" "\\.jsx\\'" "\\.tsx\\'")
+    :mode ("\\.ts\\'" "\\.ts\\'" "\\.jsx\\'")
     :config
     (setq typescript-indent-level 2)
     (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
@@ -607,8 +614,30 @@
   :mode ("\\.ml\\'" . reason-mode)
   :config
   (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection "~/Downloads/rls-linux/reason-language-server")
+   (make-lsp-client :new-connection (lsp-stdio-connection "~/Downloads/rls-macos/reason-language-server")
                     :major-modes '(reason-mode)
                     :notification-handlers (ht ("client/registerCapability" 'ignore))
                     :priority 1
                     :server-id 'reason-ls)))
+
+(use-package purescript-mode
+  :ensure t
+  :mode "\\.purs$")
+
+(use-package psc-ide
+  :ensure t
+  :config
+  (add-hook 'purescript-mode-hook (lambda ()
+    (psc-ide-mode)
+    (company-mode)
+    (flycheck-mode)
+    (turn-on-purescript-indentation)))
+  (defun psc-ide-ensure ()
+    (interactive)
+    (let ((prj (projectile-project-root)))
+      (progn
+        (setq psc-ide-current prj)
+        (psc-ide-server-start-impl (expand-file-name prj))
+        (sit-for 3) ;; waiting for the server to start to send it commands
+        (psc-ide-load-all)
+        (message (format "psc-ide started for %s" (projectile-project-name)))))))

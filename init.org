@@ -382,6 +382,9 @@ maximizes window without using useless osx fullscreen mode
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-add-mode 'javascript-eslint 'js2-mode)
     (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+    (add-hook 'web-mode-hook (lambda () (when (and (stringp buffer-file-name)
+                   (string-match "\\.tsx\\'" buffer-file-name))
+              (setup-tide-mode))))
     ;; (flycheck-add-mode 'typescript-tslint 'typescript-mode)
     (setq-default flycheck-disabled-checkers
                   (append flycheck-disabled-checkers
@@ -618,9 +621,7 @@ pip3 install jedi flake8 autopep8 black yapf
     (setq web-mode-enable-auto-quoting nil
           web-mode-enable-current-element-highlight t
           web-mode-markup-indent-offset 2
-          css-indent-offset 2)
-(when (string= (file-name-extension buffer-file-name) "tsx")
-(setup-tide-mode)))
+          css-indent-offset 2))
 
   (use-package emmet-mode
     :ensure t

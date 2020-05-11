@@ -818,3 +818,28 @@ pip3 install jedi flake8 autopep8 black yapf
                     :server-id 'reason-ls)))
 
 #+END_SRC
+*** purescript
+
+#+BEGIN_SRC emacs-lisp  :tangle ~/.emacs.d/init.el
+(use-package purescript-mode
+  :ensure t
+  :mode "\\.purs$")
+
+(use-package psc-ide
+  :ensure t
+  :config
+  (add-hook 'purescript-mode-hook (lambda ()
+    (psc-ide-mode)
+    (company-mode)
+    (flycheck-mode)
+    (turn-on-purescript-indentation)))
+  (defun psc-ide-ensure ()
+    (interactive)
+    (let ((prj (projectile-project-root)))
+      (progn
+        (setq psc-ide-current prj)
+        (psc-ide-server-start-impl (expand-file-name prj))
+        (sit-for 3) ;; waiting for the server to start to send it commands
+        (psc-ide-load-all)
+        (message (format "psc-ide started for %s" (projectile-project-name)))))))
+#+END_SRC

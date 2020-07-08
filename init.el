@@ -27,7 +27,11 @@
 (load-theme 'tron t)
 
 (custom-set-faces
-'(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
 
 (setq ring-bell-function 'ignore)
 
@@ -472,6 +476,7 @@
     :config
       (add-hook 'typescript-mode-hook #'setup-tide-mode)
       (add-hook 'js2-mode-hook #'setup-tide-mode)
+      (add-hook 'web-mode-hook #'setup-tide-mode)
       (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
       (flycheck-add-next-checker 'javascript-tide '(t . javascript-eslint) 'append)
       (setq tide-format-options '(
@@ -641,3 +646,11 @@
         (sit-for 3) ;; waiting for the server to start to send it commands
         (psc-ide-load-all)
         (message (format "psc-ide started for %s" (projectile-project-name)))))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (purescript-mode yascroll whole-line-or-region which-key websocket web-mode use-package tide smex shut-up scheme-complete reason-mode rainbow-delimiters psc-ide poet-theme paxedit ox-pandoc org-ref omnisharp nov neotree magit-gitflow lsp-ui lfe-mode indium indent-guide imenu-list ido-vertical-mode hy-mode helm-ag haskell-mode ghub geiser exec-path-from-shell emmet-mode elpy ediprolog diminish dim company-lsp company-jedi cider auctex add-node-modules-path ace-window ace-jump-mode))))

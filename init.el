@@ -134,8 +134,7 @@
           (typescript-mode           "TS")
           (calendar-mode             "📆")))
        (dim-minor-names
-        '((tide-mode                 " ti")
-          (company-mode              " cmpy")
+        '((company-mode              " cmpy")
           (eldoc-mode                " doc"))))
 
 (use-package yascroll
@@ -312,23 +311,6 @@
      ;; (gnuplot . t)
      (shell . t)))
 
-(defun make-1984-entry ()
-  (interactive)
-  (let* (
-       (current-date (calendar-current-date))
-       (current-year (nth 2 current-date))
-       (current-month (car current-date))
-       (current-day (nth 1 current-date))
-       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month)))
-  (make-directory output-directory t)
-  (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
-                         (current-time-string)
-                         buffer-file-name
-                         output-directory
-                         current-day))))
-
-(add-hook 'after-save-hook 'make-1984-entry)
-
   (defun open-init-org ()
       (interactive)
     (find-file-existing "~/.emacs.d/init.org"))
@@ -438,83 +420,89 @@
      (use-package indium
        :ensure t)
 
-  (use-package web-mode
-    :ensure t
-    :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'" "\\.tsx\\'")
-    :interpreter "web"
-    :config
-    (setq web-mode-enable-auto-quoting nil
-          web-mode-enable-current-element-highlight t
-          web-mode-markup-indent-offset 2
-          css-indent-offset 2)
-(when (string= (file-name-extension buffer-file-name) "tsx")
-(setup-tide-mode)))
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'"  "\\.css\\'" "\\.svelte\\'" "\\.tsx\\'")
+  :interpreter "web"
+  :config
+  (setq web-mode-enable-auto-quoting nil
+        web-mode-enable-current-element-highlight t
+        web-mode-markup-indent-offset 2
+        css-indent-offset 2)
+  ;; (when (string= (file-name-extension buffer-file-name) "tsx")
+  ;;   (setup-tide-mode))
+  )
 
-  (use-package emmet-mode
-    :ensure t
-    :commands (emmet-mode)
-    :init
-      (add-hook 'web-mode-hook #'emmet-mode)
-    :config (when (and (stringp buffer-file-name)
-                   (string-match "\\.css\\'" buffer-file-name))
-              (setq emmet-use-css-transform t)))
+(use-package emmet-mode
+  :ensure t
+  :commands (emmet-mode)
+  :init
+    (add-hook 'web-mode-hook #'emmet-mode)
+  :config (when (and (stringp buffer-file-name)
+                 (string-match "\\.css\\'" buffer-file-name))
+            (setq emmet-use-css-transform t)))
 
-  (defun setup-tide-mode()
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :config (lsp-enable-which-key-integration t))
+
+;; (defun setup-tide-mode()
+;;   (interactive)
+;;   (tide-setup)
+;;     ;; (flycheck-mode +1)
+;;     ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+;;     (eldoc-mode +1)
+;;     (tide-hl-identifier-mode +1)
+;;     (company-mode +1))
+
+;; (use-package tide
+;;   :ensure t
+;;   :defer 1
+;;   :bind (("C-c <up>" . tide-jump-to-definition))
+;;   :config
+;;     ;; (add-hook 'typescript-mode-hook #'setup-tide-mode)
+;;     ;; (add-hook 'js2-mode-hook #'setup-tide-mode)
+;;     ;; (add-hook 'web-mode-hook #'setup-tide-mode)
+;;     (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
+;;     (flycheck-add-next-checker 'javascript-tide '(t . javascript-eslint) 'append)
+;;     (setq tide-format-options '(
+;;                             :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
+;;                             :placeOpenBraceOnNewLineForFunctions nil)))
+
+(use-package typescript-mode
+  :ensure t
+  :mode ("\\.ts\\'" "\\.ts\\'" "\\.jsx\\'")
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2)
+  (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
+  (add-hook 'typescript-mode-hook #'add-node-modules-path)
+  (add-hook 'typescript-mode-hook
+            (lambda ()
+              (setq-local prettify-symbols-alist js-ts-prettify-symbols-alist)
+              )))
+
+
+(defun next-import ()
+  (condition-case nil
+      (progn
+        (re-search-forward "^import.*from.*$")
+        (move-beginning-of-line 1))
+    (error
+     (goto-char (point-max)))))
+
+(defun import-start-key ()
+  (search-forward "'" nil nil)
+  ;; find  a better way to return nil
+  (quote nil))
+
+(defun import-sort ()
+    "Typescript/ES6 import sort"
     (interactive)
-    (tide-setup)
-      ;; (flycheck-mode +1)
-      ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
-      (eldoc-mode +1)
-      (tide-hl-identifier-mode +1)
-      (company-mode +1))
-
-  (use-package tide
-    :ensure t
-    :defer 1
-    :bind (("C-c <up>" . tide-jump-to-definition))
-    :config
-      (add-hook 'typescript-mode-hook #'setup-tide-mode)
-      (add-hook 'js2-mode-hook #'setup-tide-mode)
-      (add-hook 'web-mode-hook #'setup-tide-mode)
-      (flycheck-add-next-checker 'typescript-tide '(t . javascript-eslint) 'append)
-      (flycheck-add-next-checker 'javascript-tide '(t . javascript-eslint) 'append)
-      (setq tide-format-options '(
-                              :insertSpaceAfterFunctionKeywordForAnonymousFunctions t
-                              :placeOpenBraceOnNewLineForFunctions nil)))
-
-  (use-package typescript-mode
-    :ensure t
-    :mode ("\\.ts\\'" "\\.ts\\'" "\\.jsx\\'")
-    :config
-    (setq typescript-indent-level 2)
-    (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
-    (add-hook 'typescript-mode-hook #'add-node-modules-path)
-    (add-hook 'typescript-mode-hook
-              (lambda ()
-                (setq-local prettify-symbols-alist js-ts-prettify-symbols-alist)
-                )))
-
-
-  (defun next-import ()
-    (condition-case nil
-        (progn
-          (re-search-forward "^import.*from.*$")
-          (move-beginning-of-line 1))
-      (error
-       (goto-char (point-max)))))
-
-  (defun import-start-key ()
-    (search-forward "'" nil nil)
-    ;; find  a better way to return nil
-    (quote nil))
-
-  (defun import-sort ()
-      "Typescript/ES6 import sort"
-      (interactive)
-      (save-excursion
-        (goto-char (point-min))
-        (next-import)
-            (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
+    (save-excursion
+      (goto-char (point-min))
+      (next-import)
+          (sort-subr nil 'next-import 'end-of-line 'import-start-key 'import-start-key)))
 
   (use-package geiser
     :ensure t
@@ -592,7 +580,6 @@
 
 (use-package paredit
   :ensure t
-  :after (define-key paredit-mode-map (kbd "DEL") 'delete-backward-char)
   :config
   (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; enable in the *scratch* buffer
@@ -601,10 +588,10 @@
   (add-hook 'lisp-mode-hook #'paredit-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
-(use-package lsp-mode
-  :ensure t
-  :hook (reason-mode . lsp)
-  :commands lsp)
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :hook (reason-mode . lsp)
+;;   :commands lsp)
 
 (use-package lsp-ui
   :ensure t
@@ -649,3 +636,33 @@
         (sit-for 3) ;; waiting for the server to start to send it commands
         (psc-ide-load-all)
         (message (format "psc-ide started for %s" (projectile-project-name)))))))
+
+(setq cds-highlights
+      '(("entity" . 'font-lock-function-name-face)
+        ("managed" . 'font-lock-constant-face)))
+
+(define-derived-mode cds-mode fundamental-mode "cds"
+  "major mode for editing mymath language code."
+  (setq font-lock-defaults '(cds-highlights)))
+
+(defun concat-paths (dirs)
+  (if (null dirs)
+      ""
+    (concat (file-name-as-directory (car dirs)) (concat-paths (cdr dirs)))))
+
+
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(cds-mode . "cds"))
+  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
+                                                      (shell-command-to-string "npm root -g")))
+
+         (server-path (concat (concat-paths `(,node_modules-path
+                                              "@sap"
+                                              "cds-lsp"
+                                              "dist")) "main.js"))
+         (server-command `("node" ,server-path "--stdio")))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
+                      :activation-fn (lsp-activate-on "cds")
+                      :server-id 'cds-ls))))

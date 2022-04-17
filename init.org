@@ -849,3 +849,37 @@ pip3 install jedi flake8 autopep8 black yapf
         (psc-ide-load-all)
         (message (format "psc-ide started for %s" (projectile-project-name)))))))
 #+END_SRC
+*** cap cds
+    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(setq cds-highlights
+      '(("entity" . 'font-lock-function-name-face)
+        ("managed" . 'font-lock-constant-face)))
+
+(define-derived-mode cds-mode fundamental-mode "cds"
+  "major mode for editing mymath language code."
+  (setq font-lock-defaults '(cds-highlights)))
+
+(defun concat-paths (dirs)
+  (if (null dirs)
+      ""
+    (concat (file-name-as-directory (car dirs)) (concat-paths (cdr dirs)))))
+
+
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(cds-mode . "cds"))
+  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
+                                                      (shell-command-to-string "npm root -g")))
+
+         (server-path (concat (concat-paths `(,node_modules-path
+                                              "@sap"
+                                              "cds-lsp"
+                                              "dist")) "main.js"))
+         (server-command `("node" ,server-path "--stdio")))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
+                      :activation-fn (lsp-activate-on "cds")
+                      :server-id 'cds-ls))))
+
+
+    #+END_SRC

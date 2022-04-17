@@ -13,7 +13,7 @@
 (add-to-list
    'package-archives
    ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
-   '("melpa" . "http://melpa.milkbox.net/packages/")
+   '("melpa" . "http://melpa.org/packages/")
    t)
 
     (package-initialize)
@@ -24,20 +24,19 @@
       (require 'use-package))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'tron t)
+(load-theme 'tango-dark t)
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
+'(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
 
 (setq ring-bell-function 'ignore)
 
 (tool-bar-mode -1)
 
 (scroll-bar-mode 0)
+
+(when (not (display-graphic-p))
+  (menu-bar-mode -1))
 
   (use-package imenu-list
     :ensure t)
@@ -150,9 +149,9 @@
      (setq-default indent-tabs-mode nil
                    tab-width 2)
 
-     (use-package indent-guide
-       :ensure t
-       :config (indent-guide-global-mode 1))
+     ;; (use-package indent-guide
+     ;;   :ensure t
+     ;;   :config (indent-guide-global-mode 1))
 
      (use-package yasnippet
        :ensure t
@@ -410,7 +409,7 @@
     ("async" . ?⌚)
     ("await" . ?⌚)
     (">=" . ?≥)
-    ("=>" . ?⇒)
+    ;; ("=>" . ?⇒)
     ("return" . ?↳)
     ("!==" . ?≠)))
 
@@ -557,6 +556,10 @@
                                  auto-mode-alist))
   (eval-after-load 'prolog
                     '(define-key prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim))
+  (use-package ediprolog
+      :ensure t
+      :config
+      (setq ediprolog-system 'swi))
 
     (use-package omnisharp
       :ensure t
@@ -607,11 +610,11 @@
   :ensure t
   :commands lsp-ui-mode)
 
-(use-package company-lsp
-  :ensure t
-  :after company lsp-mode
-  :init
-  (push 'company-lsp company-backends))
+;; (use-package company-lsp
+;;   :ensure t
+;;   :after company lsp-mode
+;;   :init
+;;   (push 'company-lsp company-backends))
 
 (use-package reason-mode
   :ensure t
@@ -646,11 +649,3 @@
         (sit-for 3) ;; waiting for the server to start to send it commands
         (psc-ide-load-all)
         (message (format "psc-ide started for %s" (projectile-project-name)))))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (purescript-mode yascroll whole-line-or-region which-key websocket web-mode use-package tide smex shut-up scheme-complete reason-mode rainbow-delimiters psc-ide poet-theme paxedit ox-pandoc org-ref omnisharp nov neotree magit-gitflow lsp-ui lfe-mode indium indent-guide imenu-list ido-vertical-mode hy-mode helm-ag haskell-mode ghub geiser exec-path-from-shell emmet-mode elpy ediprolog diminish dim company-lsp company-jedi cider auctex add-node-modules-path ace-window ace-jump-mode))))

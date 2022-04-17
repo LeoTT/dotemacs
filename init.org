@@ -36,7 +36,7 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
 (add-to-list
    'package-archives
    ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
-   '("melpa" . "http://melpa.milkbox.net/packages/")
+   '("melpa" . "http://melpa.org/packages/")
    t)
     #+END_SRC
 
@@ -54,7 +54,7 @@ whenever I save init.org I want a new init.elc tangled and byte-compiled from it
 ** theme
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'tron t)
+(load-theme 'tango-dark t)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -86,6 +86,12 @@ scrollbars take too many pixels
    #+END_SRC
 
 ** basic configuration
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(when (not (display-graphic-p))
+  (menu-bar-mode -1))
+#+END_SRC
+
 *** imenu-list
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -234,9 +240,9 @@ maximizes window without using useless osx fullscreen mode
      (setq-default indent-tabs-mode nil
                    tab-width 2)
 
-     (use-package indent-guide
-       :ensure t
-       :config (indent-guide-global-mode 1))
+     ;; (use-package indent-guide
+     ;;   :ensure t
+     ;;   :config (indent-guide-global-mode 1))
    #+END_SRC
 *** snippets
 
@@ -573,7 +579,7 @@ pip3 install jedi flake8 autopep8 black yapf
     ("async" . ?⌚)
     ("await" . ?⌚)
     (">=" . ?≥)
-    ("=>" . ?⇒)
+    ;; ("=>" . ?⇒)
     ("return" . ?↳)
     ("!==" . ?≠)))
 #+END_SRC
@@ -747,6 +753,11 @@ pip3 install jedi flake8 autopep8 black yapf
                                  auto-mode-alist))
   (eval-after-load 'prolog
                     '(define-key prolog-mode-map (kbd "C-x C-e") 'ediprolog-dwim))
+  (use-package ediprolog
+      :ensure t
+      :config
+      (setq ediprolog-system 'swi))
+
 #+END_SRC
 *** csharp
 
@@ -787,7 +798,6 @@ pip3 install jedi flake8 autopep8 black yapf
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package paredit
   :ensure t
-  :after (define-key paredit-mode-map (kbd "DEL") 'delete-backward-char)
   :config
   (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; enable in the *scratch* buffer
@@ -807,11 +817,11 @@ pip3 install jedi flake8 autopep8 black yapf
   :ensure t
   :commands lsp-ui-mode)
 
-(use-package company-lsp
-  :ensure t
-  :after company lsp-mode
-  :init
-  (push 'company-lsp company-backends))
+;; (use-package company-lsp
+;;   :ensure t
+;;   :after company lsp-mode
+;;   :init
+;;   (push 'company-lsp company-backends))
 
 (use-package reason-mode
   :ensure t

@@ -451,28 +451,6 @@ based on orgmode, pandoc, revealjs
      (shell . t)))
 #+END_SRC
 
-*** 1984
-I want to track what I'm doing and when.
-This adds an entry in a csv file for every saved file
-#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(defun make-1984-entry ()
-  (interactive)
-  (let* (
-       (current-date (calendar-current-date))
-       (current-year (nth 2 current-date))
-       (current-month (car current-date))
-       (current-day (nth 1 current-date))
-       (output-directory (format "~/.emacs.d/1984/%d/%d" current-year current-month)))
-  (make-directory output-directory t)
-  (shell-command (format "echo \"%s,%s\" >> %s/%s.csv"
-                         (current-time-string)
-                         buffer-file-name
-                         output-directory
-                         current-day))))
-
-(add-hook 'after-save-hook 'make-1984-entry)
-#+END_SRC
-
 *** open init.org
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (defun open-init-org ()

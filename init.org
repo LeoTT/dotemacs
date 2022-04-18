@@ -465,6 +465,11 @@ based on orgmode, pandoc, revealjs
 #+END_SRC
 
 ** programming
+*** xml
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(setq nxml-sexp-element-flag t)
+#+END_SRC
+
 *** haskell
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -500,7 +505,6 @@ based on orgmode, pandoc, revealjs
                 )))
 
 #+END_SRC
-
 *** elisp
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
   (defconst lisp--prettify-symbols-alist

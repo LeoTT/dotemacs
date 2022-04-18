@@ -319,6 +319,8 @@
     (interactive)
   (shell (concat "**" default-directory "**")))
 
+(setq nxml-sexp-element-flag t)
+
   (defvar haskell-prettify-symbols-alist
     '(("::"     . ?∷)
       ("forall" . ?∀)

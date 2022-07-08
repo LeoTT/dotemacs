@@ -92,6 +92,11 @@ scrollbars take too many pixels
   (menu-bar-mode -1))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(when (not (display-graphic-p))
+  (xterm-mouse-mode 1))
+#+END_SRC
+
 *** imenu-list
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -119,9 +124,14 @@ scrollbars take too many pixels
 *** diminish
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (use-package diminish
-:ensure t)
+  :ensure t
+  :config (diminish 'yas-minor-mode)
+            (diminish 'auto-revert-mode)
+            (diminish 'flycheck-minor-mode)
+            (diminish 'whole-line-or-region-local-mode)
+            (diminish 'which-key-mode))
 (use-package bind-key
-:ensure t)
+  :ensure t)
 #+END_SRC
 *** os-specific
 **** osx
@@ -468,6 +478,29 @@ based on orgmode, pandoc, revealjs
 *** xml
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (setq nxml-sexp-element-flag t)
+(add-hook 'nxml-mode-hook (lambda () (when (or (locate-dominating-file buffer-file-name "ui5.yaml")
+                                          (locate-dominating-file buffer-file-name "ui5-local.yaml")
+                                          (locate-dominating-file buffer-file-name "ui5.yml")
+                                          (locate-dominating-file buffer-file-name "ui5-local.yml"))
+                                  (lsp-deferred))))
+;; npm i -g globby@11.0.4 // ui5 language server has not added this as dependency for some reason
+;; npm i -g @ui5-language-assistant/language-server'
+
+
+
+(with-eval-after-load 'lsp-mode
+
+  (add-to-list 'lsp-language-id-configuration '(nxml-mode . "ui5"))
+  ;; stupid
+  (let* ((server-path (replace-regexp-in-string "\n$" ""
+                                                 (shell-command-to-string
+                                                  "NODE_PATH=\"$(npm root -g)\" node -e \"console.log(require('@ui5-language-assistant/language-server').SERVER_PATH);\"")))
+          (server-command `("node" ,server-path "--stdio")))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
+                      :activation-fn (lsp-activate-on "ui5")
+                      :server-id 'ui5-ls))))
+
 #+END_SRC
 
 *** haskell
@@ -856,19 +889,48 @@ pip3 install jedi flake8 autopep8 black yapf
 *** cap cds
     #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (setq cds-highlights
-      '(("entity" . 'font-lock-function-name-face)
-        ("managed" . 'font-lock-constant-face)))
+      '(("service\\|entity\\|$self\\|key" . 'font-lock-keyword-face)
+        ("managed\\|cuid\\|Decimal\\|Currency" . 'font-lock-constant-face)
+        ("String\\|Number\\|Date\\|Integer\\|LargeBinary" . 'font-lock-type-face)
+        ("Association to \\(many\\)?" . 'font-lock-function-name-face)
+        ("Composition of many" . 'font-lock-function-name-face)
+        ("as projection on" . 'font-lock-function-name-face)
+        ("//.+" . font-lock-comment-face)))
+
+(defvar cds-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (c-populate-syntax-table table)
+    (modify-syntax-entry ?\' "\"" table)
+    (modify-syntax-entry ?# ">" table)
+    (modify-syntax-entry ?\# ">" table)
+    (modify-syntax-entry ?# "< b" table)
+    (modify-syntax-entry ?\/ ". 12b" table)
+    (modify-syntax-entry ?\n "> b" table)
+    (modify-syntax-entry ?\/ ". 14" table)
+    (modify-syntax-entry ?* ". 23" table)
+    table)
+  "Syntax table for `cds-mode'.")
 
 (define-derived-mode cds-mode fundamental-mode "cds"
-  "major mode for editing mymath language code."
-  (setq font-lock-defaults '(cds-highlights)))
+  "major mode for editing cap cds code."
+  :syntax-table cds-mode-syntax-table
+  (setq font-lock-defaults '(cds-highlights))
+  (set (make-local-variable 'comment-start) "/*")
+  (set (make-local-variable 'comment-end) "*/")
+  (lsp-deferred))
+
+(add-to-list 'auto-mode-alist '("\\.cds\\'" . cds-mode))
+
+(defun format-cds ()
+  (interactive)
+  (save-buffer)
+  (shell-command (concat "format-cds " buffer-file-name))
+  (revert-buffer nil t))
 
 (defun concat-paths (dirs)
   (if (null dirs)
       ""
     (concat (file-name-as-directory (car dirs)) (concat-paths (cdr dirs)))))
-
-
 
 (with-eval-after-load 'lsp-mode
   (add-to-list 'lsp-language-id-configuration '(cds-mode . "cds"))

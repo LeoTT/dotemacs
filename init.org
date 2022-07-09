@@ -164,8 +164,6 @@ scrollbars take too many pixels
 (use-package exec-path-from-shell
   :ensure t
   :config (exec-path-from-shell-initialize))
-
-     (exec-path-from-shell-initialize)
 #+END_SRC
 *** misc
 

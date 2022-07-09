@@ -104,6 +104,25 @@ scrollbars take too many pixels
     :ensure t)
 #+END_SRC
 
+*** wsl
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(defun wsl-copy (start end)
+  (interactive "r")
+  (shell-command-on-region start end "clip.exe")
+  (deactivate-mark))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(defun wsl-paste ()
+  (interactive)
+  (let ((clipboard
+     (shell-command-to-string "powershell.exe -command 'Get-Clipboard' 2> /dev/null")))
+    (setq clipboard (replace-regexp-in-string "\r" "" clipboard)) ; Remove Windows ^M characters
+    (setq clipboard (substring clipboard 0 -1)) ; Remove newline added by Powershell
+    (insert clipboard)))
+#+END_SRC
+
+
 *** whole-line-or-region
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -590,8 +609,6 @@ pip3 install jedi flake8 autopep8 black yapf
     ("||" . ?∨)
     ("public" . ?+)
     ("private" . ?-)
-    ("async" . ?⌚)
-    ("await" . ?⌚)
     (">=" . ?≥)
     ;; ("=>" . ?⇒)
     ("return" . ?↳)
@@ -767,6 +784,8 @@ pip3 install jedi flake8 autopep8 black yapf
 *** prolog
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/prolog"))
   (load "./prolog.el")
   (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
   (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)

@@ -1,13 +1,14 @@
-    (defun tangle-init ()
-      "If the current buffer is 'init.org' the code-blocks are
-    tangled, and the tangled file is compiled."
-      (when (equal (buffer-file-name)
-                   (expand-file-name (concat user-emacs-directory "init.org")))
-        ;; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil))
-          (org-babel-tangle)
-          (byte-compile-file (concat user-emacs-directory "init.el")))))
-    (add-hook 'after-save-hook 'tangle-init)
+(defun tangle-init ()
+ "If the current buffer is 'init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+ (when (equal (buffer-file-name)
+              (expand-file-name (concat user-emacs-directory "init.org")))
+   ;; Avoid running hooks when tangling.
+   (let ((prog-mode-hook nil))
+     (org-babel-tangle)
+     ;; (byte-compile-file (concat user-emacs-directory "init.el"))
+     )))
+(add-hook 'after-save-hook 'tangle-init)
 
 (require 'package)
 (add-to-list
@@ -38,8 +39,24 @@
 (when (not (display-graphic-p))
   (menu-bar-mode -1))
 
+(when (not (display-graphic-p))
+  (xterm-mouse-mode 1))
+
   (use-package imenu-list
     :ensure t)
+
+(defun wsl-copy (start end)
+  (interactive "r")
+  (shell-command-on-region start end "clip.exe")
+  (deactivate-mark))
+
+(defun wsl-paste ()
+  (interactive)
+  (let ((clipboard
+     (shell-command-to-string "powershell.exe -command 'Get-Clipboard' 2> /dev/null")))
+    (setq clipboard (replace-regexp-in-string "\r" "" clipboard)) ; Remove Windows ^M characters
+    (setq clipboard (substring clipboard 0 -1)) ; Remove newline added by Powershell
+    (insert clipboard)))
 
 (use-package whole-line-or-region
   :ensure t
@@ -51,9 +68,14 @@
     :mode "\\.md$")
 
 (use-package diminish
-:ensure t)
+  :ensure t
+  :config (diminish 'yas-minor-mode)
+            (diminish 'auto-revert-mode)
+            (diminish 'flycheck-minor-mode)
+            (diminish 'whole-line-or-region-local-mode)
+            (diminish 'which-key-mode))
 (use-package bind-key
-:ensure t)
+  :ensure t)
 
 (when (memq window-system '(mac ns))
   (setq mac-option-modifier 'super
@@ -64,8 +86,6 @@
 (use-package exec-path-from-shell
   :ensure t
   :config (exec-path-from-shell-initialize))
-
-     (exec-path-from-shell-initialize)
 
   (put 'scroll-left 'disabled nil)
   (put 'erase-buffer 'disabled nil)
@@ -320,6 +340,28 @@
   (shell (concat "**" default-directory "**")))
 
 (setq nxml-sexp-element-flag t)
+(add-hook 'nxml-mode-hook (lambda () (when (or (locate-dominating-file buffer-file-name "ui5.yaml")
+                                          (locate-dominating-file buffer-file-name "ui5-local.yaml")
+                                          (locate-dominating-file buffer-file-name "ui5.yml")
+                                          (locate-dominating-file buffer-file-name "ui5-local.yml"))
+                                  (lsp-deferred))))
+;; npm i -g globby@11.0.4 // ui5 language server has not added this as dependency for some reason
+;; npm i -g @ui5-language-assistant/language-server'
+
+
+
+(with-eval-after-load 'lsp-mode
+
+  (add-to-list 'lsp-language-id-configuration '(nxml-mode . "ui5"))
+  ;; stupid
+  (let* ((server-path (replace-regexp-in-string "\n$" ""
+                                                 (shell-command-to-string
+                                                  "NODE_PATH=\"$(npm root -g)\" node -e \"console.log(require('@ui5-language-assistant/language-server').SERVER_PATH);\"")))
+          (server-command `("node" ,server-path "--stdio")))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
+                      :activation-fn (lsp-activate-on "ui5")
+                      :server-id 'ui5-ls))))
 
   (defvar haskell-prettify-symbols-alist
     '(("::"     . ?∷)
@@ -390,8 +432,6 @@
     ("||" . ?∨)
     ("public" . ?+)
     ("private" . ?-)
-    ("async" . ?⌚)
-    ("await" . ?⌚)
     (">=" . ?≥)
     ;; ("=>" . ?⇒)
     ("return" . ?↳)
@@ -447,6 +487,23 @@
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :config (lsp-enable-which-key-integration t))
+
+(use-package eglot
+  :ensure t
+  :commands (eglot)
+  :config
+  (add-hook 'js-mode 'eglot-ensure)
+  (add-hook 'js2-mode 'eglot-ensure)
+  (add-hook 'cds-mode 'eglot-ensure)
+  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
+                                                      (shell-command-to-string "npm root -g")))
+
+         (server-path (concat (concat-paths `(,node_modules-path
+                                              "@sap"
+                                              "cds-lsp"
+                                              "dist")) "main.js"))
+         (server-command `("node" ,server-path "--stdio")))
+    (add-to-list 'eglot-server-programs `(cds-mode . ,server-command))))
 
 ;; (defun setup-tide-mode()
 ;;   (interactive)
@@ -535,6 +592,7 @@
     :ensure t
     :mode ("\\.clj\\'"))
 
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/prolog"))
   (load "./prolog.el")
   (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
   (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
@@ -640,31 +698,44 @@
         (message (format "psc-ide started for %s" (projectile-project-name)))))))
 
 (setq cds-highlights
-      '(("entity" . 'font-lock-function-name-face)
-        ("managed" . 'font-lock-constant-face)))
+      '(("service\\|entity\\|$self\\|key" . 'font-lock-keyword-face)
+        ("managed\\|cuid\\|Decimal\\|Currency" . 'font-lock-constant-face)
+        ("String\\|Number\\|Date\\|Integer\\|LargeBinary" . 'font-lock-type-face)
+        ("Association to \\(many\\)?" . 'font-lock-function-name-face)
+        ("Composition of many" . 'font-lock-function-name-face)
+        ("as projection on" . 'font-lock-function-name-face)
+        ("//.+" . font-lock-comment-face)))
+
+(defvar cds-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (c-populate-syntax-table table)
+    (modify-syntax-entry ?\' "\"" table)
+    (modify-syntax-entry ?# ">" table)
+    (modify-syntax-entry ?\# ">" table)
+    (modify-syntax-entry ?# "< b" table)
+    (modify-syntax-entry ?\/ ". 12b" table)
+    (modify-syntax-entry ?\n "> b" table)
+    (modify-syntax-entry ?\/ ". 14" table)
+    (modify-syntax-entry ?* ". 23" table)
+    table)
+  "Syntax table for `cds-mode'.")
 
 (define-derived-mode cds-mode fundamental-mode "cds"
-  "major mode for editing mymath language code."
-  (setq font-lock-defaults '(cds-highlights)))
+  "major mode for editing cap cds code."
+  :syntax-table cds-mode-syntax-table
+  (setq font-lock-defaults '(cds-highlights))
+  (set (make-local-variable 'comment-start) "/*")
+  (set (make-local-variable 'comment-end) "*/"))
+
+(add-to-list 'auto-mode-alist '("\\.cds\\'" . cds-mode))
+
+(defun format-cds ()
+  (interactive)
+  (save-buffer)
+  (shell-command (concat "format-cds " buffer-file-name))
+  (revert-buffer nil t))
 
 (defun concat-paths (dirs)
   (if (null dirs)
       ""
     (concat (file-name-as-directory (car dirs)) (concat-paths (cdr dirs)))))
-
-
-
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration '(cds-mode . "cds"))
-  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
-                                                      (shell-command-to-string "npm root -g")))
-
-         (server-path (concat (concat-paths `(,node_modules-path
-                                              "@sap"
-                                              "cds-lsp"
-                                              "dist")) "main.js"))
-         (server-command `("node" ,server-path "--stdio")))
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
-                      :activation-fn (lsp-activate-on "cds")
-                      :server-id 'cds-ls))))

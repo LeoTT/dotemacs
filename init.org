@@ -17,16 +17,17 @@ this should stay at the top.
 *** org-tangle this init
 whenever I save init.org I want a new init.elc tangled and byte-compiled from it.
   #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (defun tangle-init ()
-      "If the current buffer is 'init.org' the code-blocks are
-    tangled, and the tangled file is compiled."
-      (when (equal (buffer-file-name)
-                   (expand-file-name (concat user-emacs-directory "init.org")))
-        ;; Avoid running hooks when tangling.
-        (let ((prog-mode-hook nil))
-          (org-babel-tangle)
-          (byte-compile-file (concat user-emacs-directory "init.el")))))
-    (add-hook 'after-save-hook 'tangle-init)
+(defun tangle-init ()
+ "If the current buffer is 'init.org' the code-blocks are
+tangled, and the tangled file is compiled."
+ (when (equal (buffer-file-name)
+              (expand-file-name (concat user-emacs-directory "init.org")))
+   ;; Avoid running hooks when tangling.
+   (let ((prog-mode-hook nil))
+     (org-babel-tangle)
+     ;; (byte-compile-file (concat user-emacs-directory "init.el"))
+     )))
+(add-hook 'after-save-hook 'tangle-init)
   #+END_SRC
 
 *** register melpa package archives
@@ -676,6 +677,22 @@ pip3 install jedi flake8 autopep8 black yapf
   :commands (lsp lsp-deferred)
   :config (lsp-enable-which-key-integration t))
 
+(use-package eglot
+  :ensure t
+  :commands (eglot)
+  :config
+  (add-hook 'js-mode 'eglot-ensure)
+  (add-hook 'js2-mode 'eglot-ensure)
+  (add-hook 'cds-mode 'eglot-ensure)
+  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
+                                                      (shell-command-to-string "npm root -g")))
+
+         (server-path (concat (concat-paths `(,node_modules-path
+                                              "@sap"
+                                              "cds-lsp"
+                                              "dist")) "main.js"))
+         (server-command `("node" ,server-path "--stdio")))
+    (add-to-list 'eglot-server-programs `(cds-mode . ,server-command))))
     #+END_SRC
 
 *** typescript
@@ -933,8 +950,7 @@ pip3 install jedi flake8 autopep8 black yapf
   :syntax-table cds-mode-syntax-table
   (setq font-lock-defaults '(cds-highlights))
   (set (make-local-variable 'comment-start) "/*")
-  (set (make-local-variable 'comment-end) "*/")
-  (lsp-deferred))
+  (set (make-local-variable 'comment-end) "*/"))
 
 (add-to-list 'auto-mode-alist '("\\.cds\\'" . cds-mode))
 
@@ -948,21 +964,6 @@ pip3 install jedi flake8 autopep8 black yapf
   (if (null dirs)
       ""
     (concat (file-name-as-directory (car dirs)) (concat-paths (cdr dirs)))))
-
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration '(cds-mode . "cds"))
-  (let* ((node_modules-path (replace-regexp-in-string "\n$" ""
-                                                      (shell-command-to-string "npm root -g")))
-
-         (server-path (concat (concat-paths `(,node_modules-path
-                                              "@sap"
-                                              "cds-lsp"
-                                              "dist")) "main.js"))
-         (server-command `("node" ,server-path "--stdio")))
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection server-command)
-                      :activation-fn (lsp-activate-on "cds")
-                      :server-id 'cds-ls))))
 
 
     #+END_SRC

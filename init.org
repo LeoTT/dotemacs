@@ -265,7 +265,7 @@ maximizes window without using useless osx fullscreen mode
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (setq explicit-shell-file-name "/bin/bash")
 (setq shell-file-name "bash")
-(setq shell-command-switch "-ic")
+(setq shell-command-switch "-c")
    #+END_SRC
 *** indentation
    #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -499,6 +499,40 @@ based on orgmode, pandoc, revealjs
   (shell (concat "**" default-directory "**")))
 #+END_SRC
 
+*** god-mode
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+
+(use-package god-mode
+  :ensure t
+  :bind (("C-x C-1" . delete-other-windows)
+         ("C-x C-2" . split-window-below)
+         ("C-x C-3" . split-window-right)
+         ("C-x C-0" . delete-window)
+         :map god-local-mode-map
+         ("z" . repeat)
+         ("i" . god-local-mode)))
+(global-set-key (kbd "C-ö") #'god-local-mode)
+(god-mode)
+(defun my-god-mode-update-mode-line ()
+  (cond
+   (god-local-mode
+    (set-face-attribute 'mode-line nil
+                        :foreground "#604000"
+                        :background "#fff29a")
+    (set-face-attribute 'mode-line-inactive nil
+                        :foreground "#3f3000"
+                        :background "#fff3da"))
+   (t
+    (set-face-attribute 'mode-line nil
+			:foreground "#0a0a0a"
+			:background "#d7d7d7")
+    (set-face-attribute 'mode-line-inactive nil
+			:foreground "#404148"
+			:background "#efefef"))))
+
+(add-hook 'post-command-hook #'my-god-mode-update-mode-line)
+#+END_SRC
+
 ** programming
 *** xml
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -652,6 +686,8 @@ pip3 install jedi flake8 autopep8 black yapf
   (setq web-mode-enable-auto-quoting nil
         web-mode-enable-current-element-highlight t
         web-mode-markup-indent-offset 2
+        web-mode-enable-auto-closing nil
+        web-mode-enable-auto-pairing nil
         css-indent-offset 2)
   ;; (when (string= (file-name-extension buffer-file-name) "tsx")
   ;;   (setup-tide-mode))
@@ -687,7 +723,9 @@ pip3 install jedi flake8 autopep8 black yapf
         (add-to-list 'eglot-server-programs
                `(cds-mode . ("node" ,cds-lsp-path "--stdio")))
         (add-to-list 'eglot-server-programs
-               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio"))))
+               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio")))
+        (add-to-list 'eglot-server-programs
+               `(svelte-mode . ("svelteserver" "--stdio"))))
     (message "Could not find env.el. Some functions may not work")))
     #+END_SRC
 

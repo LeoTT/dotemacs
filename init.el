@@ -28,7 +28,12 @@ tangled, and the tangled file is compiled."
 (load-theme 'tango-dark t)
 
 (custom-set-faces
-'(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal))))
+ '(god-mode-lighter ((t (:inherit error)))))
 
 (setq ring-bell-function 'ignore)
 
@@ -165,7 +170,7 @@ tangled, and the tangled file is compiled."
 
 (setq explicit-shell-file-name "/bin/bash")
 (setq shell-file-name "bash")
-(setq shell-command-switch "-ic")
+(setq shell-command-switch "-c")
 
      (setq standard-indent 2
            tab-width 2)
@@ -343,6 +348,36 @@ tangled, and the tangled file is compiled."
     (interactive)
   (shell (concat "**" default-directory "**")))
 
+(use-package god-mode
+  :ensure t
+  :bind (("C-x C-1" . delete-other-windows)
+         ("C-x C-2" . split-window-below)
+         ("C-x C-3" . split-window-right)
+         ("C-x C-0" . delete-window)
+         :map god-local-mode-map
+         ("z" . repeat)
+         ("i" . god-local-mode)))
+(global-set-key (kbd "C-ö") #'god-local-mode)
+(god-mode)
+(defun my-god-mode-update-mode-line ()
+  (cond
+   (god-local-mode
+    (set-face-attribute 'mode-line nil
+                        :foreground "#604000"
+                        :background "#fff29a")
+    (set-face-attribute 'mode-line-inactive nil
+                        :foreground "#3f3000"
+                        :background "#fff3da"))
+   (t
+    (set-face-attribute 'mode-line nil
+			:foreground "#0a0a0a"
+			:background "#d7d7d7")
+    (set-face-attribute 'mode-line-inactive nil
+			:foreground "#404148"
+			:background "#efefef"))))
+
+(add-hook 'post-command-hook #'my-god-mode-update-mode-line)
+
 (setq nxml-sexp-element-flag t)
 (add-hook 'nxml-mode-hook (lambda () (when (or (locate-dominating-file buffer-file-name "ui5.yaml")
                                           (locate-dominating-file buffer-file-name "ui5-local.yaml")
@@ -464,6 +499,8 @@ tangled, and the tangled file is compiled."
   (setq web-mode-enable-auto-quoting nil
         web-mode-enable-current-element-highlight t
         web-mode-markup-indent-offset 2
+        web-mode-enable-auto-closing nil
+        web-mode-enable-auto-pairing nil
         css-indent-offset 2)
   ;; (when (string= (file-name-extension buffer-file-name) "tsx")
   ;;   (setup-tide-mode))
@@ -493,7 +530,9 @@ tangled, and the tangled file is compiled."
         (add-to-list 'eglot-server-programs
                `(cds-mode . ("node" ,cds-lsp-path "--stdio")))
         (add-to-list 'eglot-server-programs
-               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio"))))
+               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio")))
+        (add-to-list 'eglot-server-programs
+               `(svelte-mode . ("svelteserver" "--stdio"))))
     (message "Could not find env.el. Some functions may not work")))
 
 (use-package typescript-mode
@@ -677,3 +716,10 @@ tangled, and the tangled file is compiled."
   (revert-buffer nil t))
 
 (add-hook 'cds-mode-hook 'eglot-ensure)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))

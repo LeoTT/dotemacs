@@ -100,6 +100,7 @@ scrollbars take too many pixels
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(setq line-move-visual nil)
 #+END_SRC
 
 

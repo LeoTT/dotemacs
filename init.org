@@ -513,7 +513,7 @@ based on orgmode, pandoc, revealjs
          ("z" . repeat)
          ("i" . god-local-mode)))
 (global-set-key (kbd "C-ö") #'god-local-mode)
-(god-mode)
+;; (god-mode)
 (defun my-god-mode-update-mode-line ()
   (cond
    (god-local-mode

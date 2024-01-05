@@ -28,12 +28,7 @@ tangled, and the tangled file is compiled."
 (load-theme 'tango-dark t)
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal))))
- '(god-mode-lighter ((t (:inherit error)))))
+'(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
 
 (setq ring-bell-function 'ignore)
 
@@ -48,6 +43,7 @@ tangled, and the tangled file is compiled."
   (xterm-mouse-mode 1))
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(setq line-move-visual nil)
 
   (use-package imenu-list
     :ensure t)
@@ -206,7 +202,8 @@ tangled, and the tangled file is compiled."
 
 (use-package ido
   :ensure t
-  :config (ido-mode 1))
+  :config (ido-mode 1)
+  :bind (("M-#" . ido-find-file)))
 
 (use-package ido-vertical-mode
   :ensure t
@@ -357,8 +354,8 @@ tangled, and the tangled file is compiled."
          :map god-local-mode-map
          ("z" . repeat)
          ("i" . god-local-mode)))
-(global-set-key (kbd "C-ö") #'god-local-mode)
-(god-mode)
+;; (global-set-key (kbd "C-ö") #'god-local-mode)
+;; (god-mode)
 (defun my-god-mode-update-mode-line ()
   (cond
    (god-local-mode
@@ -716,10 +713,40 @@ tangled, and the tangled file is compiled."
   (revert-buffer nil t))
 
 (add-hook 'cds-mode-hook 'eglot-ensure)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
+
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(use-package combobulate
+    :preface
+    ;; You can customize Combobulate's key prefix here.
+    ;; Note that you may have to restart Emacs for this to take effect!
+    (setq combobulate-key-prefix "C-c o")
+
+    ;; Optional, but recommended.
+    ;;
+    ;; You can manually enable Combobulate with `M-x
+    ;; combobulate-mode'.
+    :hook ((python-ts-mode . combobulate-mode)
+           (js-ts-mode . combobulate-mode)
+           (css-ts-mode . combobulate-mode)
+           (yaml-ts-mode . combobulate-mode)
+           (typescript-ts-mode . combobulate-mode)
+           (tsx-ts-mode . combobulate-mode))
+    ;; Amend this to the directory where you keep Combobulate's source
+    ;; code.
+    :load-path ("~/.emacs.d/combobulate"))

@@ -608,11 +608,11 @@ based on orgmode, pandoc, revealjs
 pip3 install jedi flake8 autopep8 black yapf
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-(use-package elpy
-  :ensure t
-  :defer t
-  :init
-  (advice-add 'python-mode :before 'elpy-enable))
+;; (use-package elpy
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (advice-add 'python-mode :before 'elpy-enable))
 
   (use-package company-jedi
     :ensure t

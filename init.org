@@ -658,7 +658,8 @@ pip3 install jedi flake8 autopep8 black yapf
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
 (defvar js-interpreter 'ts-node
   "Should be 'node or 'ts-node")
-(require 'eros)
+(use-package eros
+       :ensure t)
 (defvar js-interpreter-display-type 'eros
   "May be 'eros or 'buffer or 'message")
 
@@ -842,13 +843,22 @@ If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer
                           (read (current-buffer))))
              (cds-lsp-path (alist-get 'cds-lsp-path emacs-env))
              (ui5-lsp-path (alist-get 'ui5-lsp-path emacs-env)))
-        (add-to-list 'eglot-server-programs
-               `(cds-mode . ("node" ,cds-lsp-path "--stdio")))
-        (add-to-list 'eglot-server-programs
-               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio")))
-        (add-to-list 'eglot-server-programs
-               `(svelte-mode . ("svelteserver" "--stdio"))))
-    (message "Could not find env.el. Some functions may not work")))
+        (setq eglot-server-programs
+              (append
+               `((cds-mode    . ("node" ,cds-lsp-path "--stdio"))
+                 (nxml-mode   . ("node" ,ui5-lsp-path "--stdio")))
+               eglot-server-programs)))
+    (message "Could not find env.el. Some functions may not work"))
+  (setq eglot-server-programs
+        (append
+         `((prolog-mode . ("swipl"
+                           "-g" "use_module(library(lsp_server))."
+                           "-g" "lsp_server:main"
+                           "-t" "halt"
+                           "--" "stdio"))
+           (svelte-mode . ("svelteserver" "--stdio")))
+         eglot-server-programs))
+  )
     #+END_SRC
 
 *** typescript
@@ -955,40 +965,6 @@ If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer
       (setq ediprolog-system 'swi))
 
 #+END_SRC
-*** csharp
-
-#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
-    (use-package omnisharp
-      :ensure t
-      :config
-      (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
-      (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
-
-  (defun my-csharp-mode-setup ()
-    (omnisharp-mode)
-    (company-mode)
-    (flycheck-mode)
-
-    (setq indent-tabs-mode nil)
-    (setq c-syntactic-indentation t)
-    ;; (c-set-style "ellemtel")
-    ;; (setq c-basic-offset 4)
-    ;; (setq truncate-lines t)
-    ;; (setq tab-width 4)
-
-    ;csharp-mode README.md recommends this too
-    ;(electric-pair-mode 1)       ;; Emacs 24
-    ;(electric-pair-local-mode 1) ;; Emacs 25
-
-    (local-set-key (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
-    (local-set-key (kbd "C-c C-c") 'recompile))
-
-  (eval-after-load
-   'company
-   '(add-to-list 'company-backends 'company-omnisharp))
-
-#+END_SRC
-
 *** lisp
 
 #+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
@@ -1108,4 +1084,10 @@ If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer
     ;; Amend this to the directory where you keep Combobulate's source
     ;; code.
     :load-path ("~/.emacs.d/combobulate"))
+#+END_SRC
+*** racket
+
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+(use-package racket-mode
+             :ensure t)
 #+END_SRC

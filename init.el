@@ -560,7 +560,6 @@ If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer
        :mode "\\.js$"
        :hook
        (js2-mode . eglot-ensure)
-       (js2-mode . eglot-ensure)
        (js2-mode . prettify-symbols-mode)
        (js2-mode . company-mode)
        :config
@@ -832,3 +831,28 @@ If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer
 
 (use-package racket-mode
              :ensure t)
+
+(defun slime-eval-last-expression-eros ()
+  (interactive)
+  (destructuring-bind (output value)
+      (slime-eval `(swank:eval-and-grab-output ,(slime-last-expression)))
+    (eros--make-result-overlay (concat output value)
+      :where (point)
+      :duration eros-eval-result-duration)))
+
+(use-package slime
+  :ensure t
+  :init
+  ;; Point SLIME to SBCL
+  (setq inferior-lisp-program "sbcl")
+  ;; Load Quicklisp's slime-helper if it exists
+  (let ((quicklisp-slime-helper
+         (expand-file-name "~/quicklisp/slime-helper.el")))
+    (when (file-exists-p quicklisp-slime-helper)
+      (load quicklisp-slime-helper)))
+  :config
+  (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-repl))
+  ;; Enable documentation popups
+  (setq slime-complete-symbol*-fancy t
+        slime-complete-symbol-function 'slime-fuzzy-complete-symbol)
+  :bind (("C-x C-e" . slime-eval-last-expression-eros)))

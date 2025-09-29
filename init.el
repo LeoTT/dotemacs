@@ -1,3 +1,7 @@
+;;; ...  -*- lexical-binding: t -*-
+
+
+
 (defun tangle-init ()
  "If the current buffer is 'init.org' the code-blocks are
 tangled, and the tangled file is compiled."
@@ -25,7 +29,12 @@ tangled, and the tangled file is compiled."
       (require 'use-package))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'tango-dark t)
+(use-package tron-legacy-theme
+  :ensure t
+  :config
+  (load-theme 'tron-legacy t)
+  (with-eval-after-load 'helm
+    (set-face-attribute 'helm-selection nil :foreground "yellow")))
 
 (custom-set-faces
 '(default ((t (:family "Fira Code" :foundry "unknown" :slant normal :weight normal :height 113 :width normal)))))
@@ -44,6 +53,13 @@ tangled, and the tangled file is compiled."
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq line-move-visual nil)
+
+(use-package project
+  :ensure t
+  :config
+  ;; Customize project-vc-exclude-directories to ignore node_modules and other directories
+  (setq project-vc-exclude-directories '("node_modules" "build" "dist" ".git" ".cache" ".vscode"))
+  (setq project-switch-commands `((project-shell "Shell") . ,project-switch-commands)))
 
   (use-package imenu-list
     :ensure t)
@@ -194,11 +210,15 @@ tangled, and the tangled file is compiled."
          ("A-ü" . ace-window)))
 
 (use-package helm
-  :ensure t)
-
-(use-package helm-ag
   :ensure t
-  :bind (("M-ö" . helm-ag)))
+  :bind (("M-ö" . helm-do-grep-ag)
+         ("M-ä" . helm-find)
+         ("M-x" . helm-M-x))
+  :config
+  (setq helm-ff-skip-boring-files t)
+  (dolist (pattern '("node_modules/?$" "dist/?$" "build/?$"))
+    (add-to-list 'helm-boring-file-regexp-list pattern)))
+
 
 (use-package ido
   :ensure t
@@ -211,14 +231,14 @@ tangled, and the tangled file is compiled."
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   (ido-vertical-mode 1))
 
-(use-package smex
-  :ensure t
-  :config (global-set-key (kbd "M-x") 'smex))
+;; (use-package smex
+;;   :ensure t
+;;   :config (global-set-key (kbd "M-x") 'smex))
 
 (use-package hippie-exp
   :ensure t
   :defer t
-  :bind (("M-ä" . hippie-expand)))
+  :bind (("M-+" . hippie-expand)))
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -345,36 +365,6 @@ tangled, and the tangled file is compiled."
     (interactive)
   (shell (concat "**" default-directory "**")))
 
-(use-package god-mode
-  :ensure t
-  :bind (("C-x C-1" . delete-other-windows)
-         ("C-x C-2" . split-window-below)
-         ("C-x C-3" . split-window-right)
-         ("C-x C-0" . delete-window)
-         :map god-local-mode-map
-         ("z" . repeat)
-         ("i" . god-local-mode)))
-;; (global-set-key (kbd "C-ö") #'god-local-mode)
-;; (god-mode)
-(defun my-god-mode-update-mode-line ()
-  (cond
-   (god-local-mode
-    (set-face-attribute 'mode-line nil
-                        :foreground "#604000"
-                        :background "#fff29a")
-    (set-face-attribute 'mode-line-inactive nil
-                        :foreground "#3f3000"
-                        :background "#fff3da"))
-   (t
-    (set-face-attribute 'mode-line nil
-			:foreground "#0a0a0a"
-			:background "#d7d7d7")
-    (set-face-attribute 'mode-line-inactive nil
-			:foreground "#404148"
-			:background "#efefef"))))
-
-(add-hook 'post-command-hook #'my-god-mode-update-mode-line)
-
 (setq nxml-sexp-element-flag t)
 (add-hook 'nxml-mode-hook (lambda () (when (or (locate-dominating-file buffer-file-name "ui5.yaml")
                                           (locate-dominating-file buffer-file-name "ui5-local.yaml")
@@ -430,11 +420,11 @@ tangled, and the tangled file is compiled."
          (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
          (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
-(use-package elpy
-  :ensure t
-  :defer t
-  :init
-  (advice-add 'python-mode :before 'elpy-enable))
+;; (use-package elpy
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (advice-add 'python-mode :before 'elpy-enable))
 
   (use-package company-jedi
     :ensure t
@@ -457,6 +447,112 @@ tangled, and the tangled file is compiled."
     ;; ("=>" . ?⇒)
     ("return" . ?↳)
     ("!==" . ?≠)))
+
+(defvar js-interpreter 'ts-node
+  "Should be 'node or 'ts-node")
+(use-package eros
+       :ensure t)
+(defvar js-interpreter-display-type 'eros
+  "May be 'eros or 'buffer or 'message")
+
+(setq js-interpreter-display-type 'eros)
+
+(defun get-buffer-content ()
+  "Return the content of the current buffer as a string."
+  (buffer-substring-no-properties (point-min) (point-max)))
+
+(defun get-selected-text ()
+  (interactive)
+  "Return the text of the selected region."
+  (when (region-active-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
+
+(defvar run-node-output-buffer nil
+  "Buffer used to store the output of `run-node-command`.")
+
+(defun display-result (result)
+  (cond ((eq js-interpreter-display-type 'eros) (eros--eval-overlay
+                                                 result
+                                                 (if (region-active-p)
+                                                     (region-end)
+                                                   (point))))
+        ((eq js-interpreter-display-type 'message) (message result))
+        ((eq js-interpreter-display-type 'buffer) (let ((output-buffer (or run-node-output-buffer
+                                                                           (setq run-node-output-buffer (generate-new-buffer "*node-output*")))))
+
+                                                    (with-current-buffer output-buffer
+                                                      (erase-buffer)
+                                                      (insert result))
+                                                    (display-buffer output-buffer)))))
+
+
+(defun run-node-command (js-code)
+  "Run Node.js with the given JavaScript code and output result."
+
+  (let* ((file-ending (cond ((eq js-interpreter 'ts-node) ".ts")
+                            ((eq js-interpreter 'node) ".js")
+                            (t (throw 'no-valid-interpreter-error "No valid value for variable js-interpreter"))))
+         (temp-file (make-temp-file "emacs-node-" nil file-ending))
+         (js-interpreter-string (cond ((eq js-interpreter 'ts-node) "ts-node")
+                                      ((eq js-interpreter 'node) "node")
+                                      (t (throw 'no-valid-interpreter-error "No valid value for variable js-interpreter")))))
+    (with-temp-file temp-file
+      (insert js-code))
+    (let* ((js-shell-command (concat js-interpreter-string " " temp-file))
+           (output (shell-command-to-string js-shell-command)))
+      (delete-file temp-file)
+      (display-result (string-remove-suffix "\n" output)))))
+
+(defun remove-console-log (js-code &optional buffer)
+  "Remove all occurrences of console.log() statements from JS code.
+If BUFFER is provided, JS code will be inserted into it; otherwise, a new buffer will be created."
+  (let ((buffer (generate-new-buffer "*temp-js-code*")))
+    (with-current-buffer buffer
+      (erase-buffer)
+      (insert js-code)
+      (goto-char (point-min))
+      (while (re-search-forward "console\\.log(.*?);?" nil t)
+        (replace-match ""))
+      (let ((modified-code (buffer-substring-no-properties (point-min) (point-max))))
+        (when buffer
+          (kill-buffer buffer))
+        modified-code))))
+
+
+;; Example usage:
+;; (let ((js-code "console.log('Message 1');2+2\nconsole.log('Message 2');"))
+;;   (message "%s" (remove-console-log js-code)))
+
+(defun eval-js-exp (js-code)
+  (let* ((whole-text (get-buffer-content))
+         (prepared-code (concat (remove-console-log whole-text)
+                                (format "console.log(%s)" (string-remove-suffix ";" js-code)))))
+    (run-node-command prepared-code)))
+
+(defun eval-js-region ()
+  (interactive)
+  (let ((selected-text (get-selected-text)))
+    (unless selected-text
+      (throw 'no-selection-error "You need to select a js expression"))
+    (eval-js-exp (get-selected-text))))
+
+(defun get-last-exp ()
+  (let ((orig-point (point)))
+    (backward-sexp)
+    (let ((before-exp-point (point)))
+      (goto-char orig-point)
+      (buffer-substring-no-properties before-exp-point orig-point))))
+
+(defun eval-last-js-exp ()
+  (interactive)
+  (eval-js-exp (get-last-exp)))
+
+
+(defun eval-js-dwim ()
+  (interactive)
+  (if (region-active-p)
+      (eval-js-region)
+    (eval-last-js-exp)))
 
      (use-package js2-mode
        :ensure t
@@ -483,7 +579,8 @@ tangled, and the tangled file is compiled."
         js2-concat-multiline-strings nil
         js2-include-node-externs t
         js2-skip-preprocessor-directives t
-        js2-strict-inconsistent-return-warning nil))
+        js2-strict-inconsistent-return-warning nil)
+       (setq js-interpreter 'ts-node))
 
      (use-package indium
        :ensure t)
@@ -524,13 +621,22 @@ tangled, and the tangled file is compiled."
                           (read (current-buffer))))
              (cds-lsp-path (alist-get 'cds-lsp-path emacs-env))
              (ui5-lsp-path (alist-get 'ui5-lsp-path emacs-env)))
-        (add-to-list 'eglot-server-programs
-               `(cds-mode . ("node" ,cds-lsp-path "--stdio")))
-        (add-to-list 'eglot-server-programs
-               `(nxml-mode . ("node" ,ui5-lsp-path "--stdio")))
-        (add-to-list 'eglot-server-programs
-               `(svelte-mode . ("svelteserver" "--stdio"))))
-    (message "Could not find env.el. Some functions may not work")))
+        (setq eglot-server-programs
+              (append
+               `((cds-mode    . ("node" ,cds-lsp-path "--stdio"))
+                 (nxml-mode   . ("node" ,ui5-lsp-path "--stdio")))
+               eglot-server-programs)))
+    (message "Could not find env.el. Some functions may not work"))
+  (setq eglot-server-programs
+        (append
+         `((prolog-mode . ("swipl"
+                           "-g" "use_module(library(lsp_server))."
+                           "-g" "lsp_server:main"
+                           "-t" "halt"
+                           "--" "stdio"))
+           (svelte-mode . ("svelteserver" "--stdio")))
+         eglot-server-programs))
+  )
 
 (use-package typescript-mode
   :ensure t
@@ -539,6 +645,8 @@ tangled, and the tangled file is compiled."
   (typescript-mode . company-mode)
   :config
   (setq typescript-indent-level 2)
+  (setq js-interpreter 'ts-node)
+  (define-key typescript-mode-map (kbd "C-x C-e") 'eval-js-dwim)
   (add-hook 'typescript-mode-hook 'prettify-symbols-mode)
   (add-hook 'typescript-mode-hook #'add-node-modules-path)
   (add-hook 'typescript-mode-hook
@@ -613,35 +721,6 @@ tangled, and the tangled file is compiled."
       :ensure t
       :config
       (setq ediprolog-system 'swi))
-
-    (use-package omnisharp
-      :ensure t
-      :config
-      (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
-      (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
-
-  (defun my-csharp-mode-setup ()
-    (omnisharp-mode)
-    (company-mode)
-    (flycheck-mode)
-
-    (setq indent-tabs-mode nil)
-    (setq c-syntactic-indentation t)
-    ;; (c-set-style "ellemtel")
-    ;; (setq c-basic-offset 4)
-    ;; (setq truncate-lines t)
-    ;; (setq tab-width 4)
-
-    ;csharp-mode README.md recommends this too
-    ;(electric-pair-mode 1)       ;; Emacs 24
-    ;(electric-pair-local-mode 1) ;; Emacs 25
-
-    (local-set-key (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
-    (local-set-key (kbd "C-c C-c") 'recompile))
-
-  (eval-after-load
-   'company
-   '(add-to-list 'company-backends 'company-omnisharp))
 
 (use-package paredit
   :ensure t
@@ -750,3 +829,6 @@ tangled, and the tangled file is compiled."
     ;; Amend this to the directory where you keep Combobulate's source
     ;; code.
     :load-path ("~/.emacs.d/combobulate"))
+
+(use-package racket-mode
+             :ensure t)

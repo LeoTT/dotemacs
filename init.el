@@ -215,6 +215,7 @@ tangled, and the tangled file is compiled."
          ("M-ä" . helm-find)
          ("M-x" . helm-M-x))
   :config
+  (setq helm-move-to-line-cycle-in-source nil)
   (setq helm-ff-skip-boring-files t)
   (dolist (pattern '("node_modules/?$" "dist/?$" "build/?$"))
     (add-to-list 'helm-boring-file-regexp-list pattern)))
